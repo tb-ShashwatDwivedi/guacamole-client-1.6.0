@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.guacamole</groupId>
+    <artifactId>guacamole-dbshell</artifactId>
+    <packaging>jar</packaging>
+    <version>1.6.0</version>
+    <name>guacamole-dbshell</name>
+    <description>
+        Guacamole extension that registers the "dbshell" protocol in the web UI,
+        providing human-readable labels for all connection parameters.
+        No authentication provider is included — this extension only adds
+        translations and the guac-manifest so the protocol form is visible.
+    </description>
+
+    <!--
+        No parent POM required: this extension has no Java source, no
+        dependencies, and uses only the maven-resources-plugin to copy the
+        resources into the JAR.
+    -->
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+
+        <plugins>
+            <!--
+                Ensure the JAR contains no empty source directories that would
+                cause a build warning.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <skipIfEmpty>false</skipIfEmpty>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

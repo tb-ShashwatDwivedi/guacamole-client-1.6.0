@@ -1,0 +1,12 @@
+{
+
+    "guacamoleVersion" : "1.6.0",
+
+    "name"      : "Database Shell (dbshell)",
+    "namespace" : "dbshell",
+
+    "translations" : [
+        "translations/en.json"
+    ]
+
+}
