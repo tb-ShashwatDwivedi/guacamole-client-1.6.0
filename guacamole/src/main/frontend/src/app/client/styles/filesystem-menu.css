@@ -17,56 +17,86 @@
  * under the License.
  */
 
+/* ─── Filesystem panel header ────────────────────────────────────────────── */
+
 #filesystem-menu .header h2 {
-    font-size: 1em;
-    font-weight: normal;
-    padding-top: 0;
-    padding-bottom: 0;
+    font-size: 0.85em;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #a0bcd8;
+    padding: 0;
+    margin: 0;
 }
 
 #filesystem-menu .header {
-    -ms-flex-align:      center;
-    -moz-box-align:      center;
-    -webkit-box-align:   center;
-    -webkit-align-items: center;
-    align-items:         center;
+    align-items: center;
+    background: rgba(26, 45, 70, 0.9);
+    border-bottom: 1px solid rgba(74, 144, 217, 0.15);
 }
 
 #filesystem-menu .menu-body {
-    padding: 0.25em;
+    padding: 0;
+    background: #141e2e;
 }
 
+/* ─── Breadcrumb bar ─────────────────────────────────────────────────────── */
+
 #filesystem-menu .header.breadcrumbs {
-    display: block;
-    background: rgba(0,0,0,0.0125);
-    border-bottom: 1px solid rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    background: rgba(20, 35, 55, 0.95);
+    border-bottom: 1px solid rgba(74, 144, 217, 0.12);
+    border-top: none;
     box-shadow: none;
     margin-top: 0;
-    border-top: none;
+    padding: 0 6px;
+    flex-wrap: wrap;
+    gap: 2px;
+    min-height: 34px;
 }
 
 #filesystem-menu .header.breadcrumbs .breadcrumb {
-    display: inline-block;
-    padding: 0.5em;
-    font-size: 0.8em;
-    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: #7a9ab8;
+    border-radius: 4px;
+    transition: background 0.12s ease, color 0.12s ease;
+    cursor: pointer;
+    letter-spacing: 0.02em;
 }
 
 #filesystem-menu .header.breadcrumbs .breadcrumb:hover {
-    background-color: #CDA;
+    background: rgba(74, 144, 217, 0.15);
+    color: #a8c8e8;
     cursor: pointer;
 }
 
+#filesystem-menu .header.breadcrumbs .breadcrumb:not(:first-child)::before {
+    content: '/';
+    margin-right: 6px;
+    color: rgba(120, 150, 180, 0.4);
+    font-weight: 300;
+}
+
 #filesystem-menu .header.breadcrumbs .breadcrumb.root {
-    background-size:         1.5em 1.5em;
-    -moz-background-size:    1.5em 1.5em;
-    -webkit-background-size: 1.5em 1.5em;
-    -khtml-background-size:  1.5em 1.5em;
+    background-size: 15px 15px;
     background-repeat: no-repeat;
     background-position: center center;
     background-image: url('images/drive.svg');
-    width: 2em;
-    height: 2em;
+    width: 26px;
+    height: 26px;
     padding: 0;
-    vertical-align: middle;
+    border-radius: 5px;
+    background-color: rgba(74, 144, 217, 0.1);
+    flex-shrink: 0;
+    opacity: 0.8;
+}
+
+#filesystem-menu .header.breadcrumbs .breadcrumb.root:hover {
+    background-color: rgba(74, 144, 217, 0.25);
+    opacity: 1;
 }

@@ -1,22 +1,38 @@
-<div class="transfer" ng-class="{'in-progress': isInProgress(), 'savable': isSavable(), 'error': hasError()}" ng-click="save()">
+<div class="sra-transfer-item"
+     ng-class="{'sra-transfer-active': isInProgress(), 'sra-transfer-done': isSavable(), 'sra-transfer-error': hasError()}"
+     ng-click="save()">
 
-    <!-- Overall status of transfer -->
-    <div class="transfer-status">
-
-        <!-- Filename and progress bar -->
-        <div class="filename">
-            <div class="progress"><div ng-style="{'width': getPercentDone() + '%'}" class="bar"></div></div>
-            {{transfer.filename}}
-        </div>
-
-        <!-- Error text -->
-        <p class="error-text">{{translatedErrorMessage}}</p>
-
+    <div class="sra-transfer-file-icon">
+        <svg ng-if="!hasError()" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+            <polyline points="13 2 13 9 20 9"></polyline>
+        </svg>
+        <svg ng-if="hasError()" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
     </div>
 
-    <!-- Progress/status text -->
-    <div class="text"
-         translate="CLIENT.TEXT_FILE_TRANSFER_PROGRESS"
-         translate-values="{PROGRESS: getProgressValue(), UNIT: getProgressUnit()}"></div>
+    <div class="sra-transfer-details">
+        <div class="sra-transfer-name">{{transfer.filename}}</div>
+        <div class="sra-transfer-progress-track" ng-if="isInProgress()">
+            <div class="sra-transfer-progress-fill" ng-style="{'width': getPercentDone() + '%'}"></div>
+        </div>
+        <div class="sra-transfer-error-msg" ng-if="hasError()">{{translatedErrorMessage}}</div>
+    </div>
+
+    <div class="sra-transfer-meta">
+        <div class="sra-transfer-size" ng-if="!hasError()"
+             translate="CLIENT.TEXT_FILE_TRANSFER_PROGRESS"
+             translate-values="{PROGRESS: getProgressValue(), UNIT: getProgressUnit()}">
+        </div>
+        <div class="sra-transfer-status-badge"
+             ng-class="{'sra-badge-active': isInProgress(), 'sra-badge-done': isSavable(), 'sra-badge-error': hasError()}">
+            <span ng-if="isInProgress()">Transferring</span>
+            <span ng-if="isSavable()">&#10003; Save</span>
+            <span ng-if="hasError()">Failed</span>
+        </div>
+    </div>
 
 </div>

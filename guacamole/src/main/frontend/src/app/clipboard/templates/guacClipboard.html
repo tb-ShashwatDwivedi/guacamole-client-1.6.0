@@ -1,12 +1,20 @@
-<div class="clipboard-editor">
-    <textarea class="clipboard"
-        ng-class="{
-            'clipboard-contents-hidden' : !contentsShown
-        }"
-        ng-disabled="!contentsShown"></textarea>
-    <div class="clipboard-contents-hidden-hint"
-        ng-click="showContents()"
-        ng-show="!contentsShown">
-        <p class="clipboard-contents-hidden-hint-text">{{ 'CLIENT.ACTION_SHOW_CLIPBOARD' | translate }}</p>
+<div class="sra-clipboard">
+
+    <!-- Locked overlay -->
+    <div class="sra-clipboard-locked"
+         ng-show="!contentsShown"
+         ng-click="showContents()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span>{{ 'CLIENT.ACTION_SHOW_CLIPBOARD' | translate }}</span>
     </div>
+
+    <!-- Editor area -->
+    <textarea class="sra-clipboard-editor clipboard"
+        ng-class="{'clipboard-contents-hidden': !contentsShown}"
+        ng-disabled="!contentsShown"
+        placeholder="Paste or type here — synced with remote clipboard"></textarea>
+
 </div>

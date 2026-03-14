@@ -73,25 +73,7 @@
 }
 
 .login-ui .login-dialog .version .version-number {
-
-    position: absolute;
-    right: 0;
-    bottom: 0;
-
-    padding: 0.25em 0.75em;
-    margin: 0.25em;
-
-    -moz-border-radius: 0.5em;
-    -webkit-border-radius: 0.5em;
-    -khtml-border-radius: 0.5em;
-    border-radius: 0.5em;
-
-    color: white;
-    background: green;
-    font-size: 0.5em;
-    font-style: italic;
-    opacity: 0.5;
-
+    display: none;
 }
 
 .login-ui .login-dialog .logo {
@@ -103,7 +85,7 @@
     -moz-background-size:    3em 3em;
     -webkit-background-size: 3em 3em;
     -khtml-background-size:  3em 3em;
-    background-image: url("images/guac-tricolor.svg");
+    background-image: url("images/app-logo.svg");
 }
 
 .login-ui.continuation .login-dialog {

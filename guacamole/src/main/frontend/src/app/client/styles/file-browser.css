@@ -17,33 +17,96 @@
  * under the License.
  */
 
-/* Hide directory contents by default */
+/* ─── File browser container ─────────────────────────────────────────────── */
 
-.file-browser .directory > .children {
-    padding-left: 1em;
+.sra-file-browser {
+    padding: 4px 0;
+}
+
+.sra-file-browser .directory > .children {
+    padding-left: 0;
     display: none;
 }
 
-.file-browser .list-item .caption {
-    white-space: nowrap;
-    border: 1px solid transparent;
+/* The directive injects files into .current-directory-contents */
+.sra-file-browser .current-directory-contents {
+    display: flex;
+    flex-direction: column;
+    padding: 4px 0;
 }
 
-.file-browser .list-item.focused .caption {
-    border: 1px dotted rgba(0, 0, 0, 0.5);
-    background: rgba(204, 221, 170, 0.5);
+/* ─── File / folder item ─────────────────────────────────────────────────── */
+
+.sra-file-item {
+    list-style: none;
 }
 
-/* Directory / file icons */
+.sra-file-item-inner {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    margin: 1px 6px;
+    transition: background 0.12s ease;
+}
 
-.file-browser .normal-file > .caption .icon {
+.sra-file-item-inner:hover {
+    background: rgba(74, 144, 217, 0.12);
+}
+
+.sra-file-item.focused .sra-file-item-inner {
+    background: rgba(74, 144, 217, 0.2);
+    outline: 1px solid rgba(74, 144, 217, 0.4);
+}
+
+/* ─── Icons ──────────────────────────────────────────────────────────────── */
+
+.sra-file-item-icon {
+    flex-shrink: 0;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background-size: 18px 18px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    opacity: 0.75;
+}
+
+.sra-file-browser .normal-file > .sra-file-item-inner .sra-file-item-icon {
     background-image: url('images/file.svg');
 }
 
-.file-browser .directory > .caption .icon {
+.sra-file-browser .directory > .sra-file-item-inner .sra-file-item-icon,
+.sra-file-browser .directory.open > .sra-file-item-inner .sra-file-item-icon {
     background-image: url('images/folder-closed.svg');
+    opacity: 0.85;
 }
 
-.file-browser .directory.previous > .caption .icon {
+.sra-file-browser .directory.previous > .sra-file-item-inner .sra-file-item-icon {
     background-image: url('images/folder-up.svg');
+    opacity: 0.85;
+}
+
+/* ─── Item name ──────────────────────────────────────────────────────────── */
+
+.sra-file-item-name {
+    font-size: 12.5px;
+    color: #b8d0e8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.sra-file-browser .directory > .sra-file-item-inner .sra-file-item-name {
+    color: #c8daef;
+    font-weight: 500;
+}
+
+.sra-file-browser .directory.previous > .sra-file-item-inner .sra-file-item-name {
+    color: #7a9ab8;
+    font-style: italic;
+    font-size: 11.5px;
 }

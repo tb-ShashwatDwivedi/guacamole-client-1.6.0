@@ -17,102 +17,104 @@
  * under the License.
  */
 
+/* ─── Transfer panel container ─────────────────────────────────────────── */
+
 #file-transfer-dialog {
-
     position: absolute;
-    right: 0;
-    bottom: 0;
+    right: 16px;
+    bottom: 16px;
     z-index: 20;
-
-    font-size: 0.8em;
-
-    width: 4in;
-    max-width: 100%;
-    max-height: 3in;
-
+    width: 360px;
+    max-width: calc(100vw - 32px);
+    max-height: 420px;
+    font-size: 13px;
 }
 
-#file-transfer-dialog .transfer-manager {
+/* ─── Panel card ─────────────────────────────────────────────────────────── */
 
-    /* IE10 */
-    display: -ms-flexbox;
-    -ms-flex-align: stretch;
-    -ms-flex-direction: column;
-
-    /* Ancient Mozilla */
-    display: -moz-box;
-    -moz-box-align: stretch;
-    -moz-box-orient: vertical;
-
-    /* Ancient WebKit */
-    display: -webkit-box;
-    -webkit-box-align: stretch;
-    -webkit-box-orient: vertical;
-
-    /* Old WebKit */
-    display: -webkit-flex;
-    -webkit-align-items: stretch;
-    -webkit-flex-direction: column;
-
-    /* W3C */
+.sra-transfer-panel {
     display: flex;
-    align-items: stretch;
     flex-direction: column;
-
-    max-width: inherit;
     max-height: inherit;
-
-    border: 1px solid rgba(0, 0, 0, 0.5);
-    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25);
-
+    background: #1a2233;
+    border: 1px solid rgba(74, 144, 217, 0.25);
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-#file-transfer-dialog .transfer-manager .header {
-    -ms-flex: 0 0 auto;
-    -moz-box-flex: 0;
-    -webkit-box-flex: 0;
-    -webkit-flex: 0 0 auto;
-    flex: 0 0 auto;
+/* ─── Header ─────────────────────────────────────────────────────────────── */
+
+.sra-transfer-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #1e2d45;
+    border-bottom: 1px solid rgba(74, 144, 217, 0.2);
+    flex-shrink: 0;
 }
 
-#file-transfer-dialog .transfer-manager .transfer-manager-body {
+.sra-transfer-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #a8c4e0;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
 
-    -ms-flex: 1 1 auto;
-    -moz-box-flex: 1;
-    -webkit-box-flex: 1;
-    -webkit-flex: 1 1 auto;
+.sra-transfer-icon {
+    display: flex;
+    align-items: center;
+    color: #4a90d9;
+}
+
+.sra-transfer-clear-btn {
+    background: rgba(74, 144, 217, 0.12);
+    border: 1px solid rgba(74, 144, 217, 0.3);
+    border-radius: 5px;
+    color: #6aaee8;
+    font-size: 11px;
+    padding: 3px 9px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+    white-space: nowrap;
+}
+
+.sra-transfer-clear-btn:hover {
+    background: rgba(74, 144, 217, 0.25);
+    border-color: rgba(74, 144, 217, 0.55);
+    color: #90c4f0;
+}
+
+/* ─── Transfer list ──────────────────────────────────────────────────────── */
+
+.sra-transfer-list {
+    overflow-y: auto;
     flex: 1 1 auto;
-
-    overflow: auto;
-
+    padding: 8px 0;
 }
 
-/*
- * Shrink maximum height if viewport is too small for default 3in dialog.
- */
+.sra-transfer-list::-webkit-scrollbar { width: 4px; }
+.sra-transfer-list::-webkit-scrollbar-track { background: transparent; }
+.sra-transfer-list::-webkit-scrollbar-thumb { background: rgba(74,144,217,0.3); border-radius: 2px; }
+
+.sra-transfer-client-label {
+    padding: 4px 14px 2px;
+    font-size: 11px;
+    color: #5a7a9a;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
 @media all and (max-height: 3in) {
-
-    #file-transfer-dialog {
-        max-height: 1.5in;
-    }
-
+    #file-transfer-dialog { max-height: 180px; }
 }
 
-/*
- * If viewport is too small for even the 1.5in dialog, fit all available space.
- */
 @media all and (max-height: 1.5in) {
-
-    #file-transfer-dialog {
-        height: 100%;
-    }
-
-    #file-transfer-dialog .transfer-manager {
-        position: absolute;
-        left:   0.5em;
-        top:    0.5em;
-        right:  0.5em;
-        bottom: 0.5em;
-    }
-
+    #file-transfer-dialog { height: 100%; bottom: 0; right: 0; }
 }

@@ -17,110 +17,43 @@
  * under the License.
  */
 
+/* ─── Base menu slide-in panel ───────────────────────────────────────────── */
+
 .menu {
     overflow: hidden;
     position: absolute;
     top: 0;
     height: 100%;
     max-width: 100%;
-    width: 480px;
-    background: #EEE;
-    box-shadow: inset -1px 0 2px white, 1px 0 2px black;
+    width: 340px;
     z-index: 100;
-    -webkit-transition: left 0.125s, opacity 0.125s;
-    -moz-transition: left 0.125s, opacity 0.125s;
-    -ms-transition: left 0.125s, opacity 0.125s;
-    -o-transition: left 0.125s, opacity 0.125s;
-    transition: left 0.125s, opacity 0.125s;
+    transition: left 0.18s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.18s ease;
 }
 
 .menu-content {
-
-    /* IE10 */
-    display: -ms-flexbox;
-    -ms-flex-align: stretch;
-    -ms-flex-direction: column;
-
-    /* Ancient Mozilla */
-    display: -moz-box;
-    -moz-box-align: stretch;
-    -moz-box-orient: vertical;
-    
-    /* Ancient WebKit */
-    display: -webkit-box;
-    -webkit-box-align: stretch;
-    -webkit-box-orient: vertical;
-
-    /* Old WebKit */
-    display: -webkit-flex;
-    -webkit-align-items: stretch;
-    -webkit-flex-direction: column;
-
-    /* W3C */
     display: flex;
     align-items: stretch;
     flex-direction: column;
-    
     width: 100%;
     height: 100%;
-
 }
 
 .menu-content .header {
-
-    -ms-flex: 0 0 auto;
-    -moz-box-flex: 0;
-    -webkit-box-flex: 0;
-    -webkit-flex: 0 0 auto;
     flex: 0 0 auto;
-
     margin-bottom: 0;
-    
 }
 
 .menu-body {
-
-    -ms-flex: 1 1 auto;
-    -moz-box-flex: 1;
-    -webkit-box-flex: 1;
-    -webkit-flex: 1 1 auto;
     flex: 1 1 auto;
-
-    padding: 1em;
     overflow: auto;
-
-    /* IE10 */
-    display: -ms-flexbox;
-    -ms-flex-align: stretch;
-    -ms-flex-direction: column;
-
-    /* Ancient Mozilla */
-    display: -moz-box;
-    -moz-box-align: stretch;
-    -moz-box-orient: vertical;
-    
-    /* Ancient WebKit */
-    display: -webkit-box;
-    -webkit-box-align: stretch;
-    -webkit-box-orient: vertical;
-
-    /* Old WebKit */
-    display: -webkit-flex;
-    -webkit-align-items: stretch;
-    -webkit-flex-direction: column;
-
-    /* W3C */
-    display: flex;
-    align-items: stretch;
-    flex-direction: column;
-
+    padding: 0;
 }
 
+.menu-body::-webkit-scrollbar { width: 4px; }
+.menu-body::-webkit-scrollbar-track { background: transparent; }
+.menu-body::-webkit-scrollbar-thumb { background: rgba(74,144,217,0.25); border-radius: 2px; }
+
 .menu-body > * {
-    -ms-flex: 0 0 auto;
-    -moz-box-flex: 0;
-    -webkit-box-flex: 0;
-    -webkit-flex: 0 0 auto;
     flex: 0 0 auto;
 }
 
@@ -136,11 +69,332 @@
 
 .menu,
 .menu.closed {
-    left: -480px;
+    left: -340px;
     opacity: 0;
 }
 
 .menu.open {
-    left: 0px;
+    left: 0;
     opacity: 1;
+}
+
+/* ─── Dark panel theme ───────────────────────────────────────────────────── */
+
+.sra-panel {
+    background: #111827;
+    box-shadow: 2px 0 24px rgba(0, 0, 0, 0.6);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.sra-panel-content {
+    background: #111827;
+}
+
+/* ─── Panel header ───────────────────────────────────────────────────────── */
+
+.sra-panel-header {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    height: 48px;
+    background: #1a2744;
+    border-bottom: 1px solid rgba(74, 144, 217, 0.18);
+    flex-shrink: 0;
+}
+
+.sra-panel-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #4a90d9;
+    min-width: 0;
+    flex: 1;
+}
+
+.sra-panel-conn-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #b8d0e8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sra-panel-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+/* ─── Panel body ─────────────────────────────────────────────────────────── */
+
+.sra-panel-body {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 0 !important;
+    background: #111827;
+}
+
+/* ─── Section ────────────────────────────────────────────────────────────── */
+
+.sra-panel-section {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 12px 0;
+}
+
+.sra-panel-section:last-child {
+    border-bottom: none;
+}
+
+.sra-section-header {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 0 14px 8px;
+    color: #4a90d9;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.sra-section-header svg {
+    flex-shrink: 0;
+    opacity: 0.9;
+}
+
+.sra-section-body {
+    padding: 0 14px;
+}
+
+.sra-section-desc {
+    font-size: 11.5px;
+    color: #5a7a9a;
+    margin: 0 0 8px;
+    line-height: 1.45;
+}
+
+/* ─── Radio group (keyboard + mouse) ─────────────────────────────────────── */
+
+.sra-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sra-radio-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 7px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.sra-radio-option:hover {
+    background: rgba(74, 144, 217, 0.08);
+    border-color: rgba(74, 144, 217, 0.2);
+}
+
+.sra-radio-option.sra-radio-selected {
+    background: rgba(74, 144, 217, 0.12);
+    border-color: rgba(74, 144, 217, 0.35);
+}
+
+.sra-radio-option input[type="radio"] {
+    margin-top: 3px;
+    accent-color: #4a90d9;
+    flex-shrink: 0;
+}
+
+.sra-radio-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sra-radio-label {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #c0d8f0;
+}
+
+.sra-radio-desc {
+    font-size: 11px;
+    color: #5a7a9a;
+    line-height: 1.3;
+}
+
+/* ─── Drive / filesystem button ──────────────────────────────────────────── */
+
+.sra-drive-btn {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 10px;
+    border-radius: 7px;
+    border: 1px solid rgba(74, 144, 217, 0.18);
+    background: rgba(74, 144, 217, 0.07);
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s;
+    font-size: 12.5px;
+    color: #a0c0e0;
+    margin-bottom: 4px;
+}
+
+.sra-drive-btn:hover {
+    background: rgba(74, 144, 217, 0.18);
+    border-color: rgba(74, 144, 217, 0.4);
+    color: #c8dff0;
+}
+
+.sra-drive-btn svg {
+    color: #4a90d9;
+    flex-shrink: 0;
+}
+
+.sra-drive-arrow {
+    margin-left: auto;
+    color: rgba(74, 144, 217, 0.5) !important;
+}
+
+/* ─── Filesystem panel header buttons ────────────────────────────────────── */
+
+.sra-fs-header {
+    gap: 8px;
+}
+
+.sra-upload-btn,
+.sra-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: background 0.12s, color 0.12s;
+    white-space: nowrap;
+}
+
+.sra-upload-btn {
+    background: rgba(74, 144, 217, 0.18);
+    color: #6aaee8;
+    border: 1px solid rgba(74, 144, 217, 0.35);
+}
+
+.sra-upload-btn:hover {
+    background: rgba(74, 144, 217, 0.3);
+    color: #90c4f0;
+}
+
+.sra-back-btn {
+    background: rgba(255, 255, 255, 0.05);
+    color: #7090b0;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sra-back-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #90a8c0;
+}
+
+/* ─── Share button ───────────────────────────────────────────────────────── */
+
+.sra-share-btn button,
+.sra-share-btn .menu-title {
+    background: rgba(74, 144, 217, 0.12);
+    color: #6aaee8;
+    border: 1px solid rgba(74, 144, 217, 0.25);
+    border-radius: 5px;
+    padding: 4px 9px;
+    font-size: 11.5px;
+    cursor: pointer;
+}
+
+/* ─── Panel close button ─────────────────────────────────────────────────── */
+
+.sra-panel-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04);
+    color: #5a7a9a;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.12s, color 0.12s;
+    padding: 0;
+}
+
+.sra-panel-close-btn:hover {
+    background: rgba(231, 76, 60, 0.15);
+    border-color: rgba(231, 76, 60, 0.3);
+    color: #e74c3c;
+}
+
+/* ─── Persistent SFTP FAB button ─────────────────────────────────────────── */
+
+.sra-sftp-fab {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px 8px 11px;
+    background: rgba(26, 39, 68, 0.92);
+    border: 1px solid rgba(74, 144, 217, 0.35);
+    border-radius: 24px;
+    color: #7ab8e8;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(6px);
+    transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
+    letter-spacing: 0.03em;
+    user-select: none;
+}
+
+.sra-sftp-fab:hover {
+    background: rgba(42, 106, 181, 0.85);
+    border-color: rgba(74, 144, 217, 0.65);
+    color: #c0dcf8;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+
+.sra-sftp-fab:active {
+    transform: translateY(0);
+}
+
+.sra-sftp-fab svg {
+    flex-shrink: 0;
+}
+
+/* ─── Share links table ──────────────────────────────────────────────────── */
+
+.sra-share-table th {
+    font-size: 11px;
+    color: #5a7a9a;
+    padding-right: 8px;
+    font-weight: 500;
+}
+
+.sra-share-table td a {
+    color: #4a90d9;
+    font-size: 11px;
+    word-break: break-all;
 }

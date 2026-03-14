@@ -71,14 +71,13 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     var MENU_DRAG_VERTICAL_TOLERANCE = 10;
 
     /**
-     * In order to open the guacamole menu, we need to hit ctrl-alt-shift. There are
-     * several possible keysysms for each key.
+     * Keyboard shortcut to open/close the session panel: Ctrl+Alt.
+     * There are several possible keysyms for each modifier key.
      */
-    var SHIFT_KEYS  = {0xFFE1 : true, 0xFFE2 : true},
-        ALT_KEYS    = {0xFFE9 : true, 0xFFEA : true, 0xFE03 : true,
-                       0xFFE7 : true, 0xFFE8 : true},
-        CTRL_KEYS   = {0xFFE3 : true, 0xFFE4 : true},
-        MENU_KEYS   = angular.extend({}, SHIFT_KEYS, ALT_KEYS, CTRL_KEYS);
+    var CTRL_KEYS = {0xFFE3 : true, 0xFFE4 : true},
+        ALT_KEYS  = {0xFFE9 : true, 0xFFEA : true, 0xFE03 : true,
+                     0xFFE7 : true, 0xFFE8 : true},
+        MENU_KEYS = angular.extend({}, CTRL_KEYS, ALT_KEYS);
 
     /**
      * Keysym for detecting any END key presses, for the purpose of passing through
@@ -389,28 +388,26 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     var substituteKeysPressed = {};
 
     /**
-     * Returns whether the shortcut for showing/hiding the Guacamole menu
-     * (Ctrl+Alt+Shift) has been pressed.
+     * Returns whether the shortcut for showing/hiding the session panel
+     * (Ctrl+Alt) has been pressed.
      *
      * @param {Guacamole.Keyboard} keyboard
      *     The Guacamole.Keyboard object tracking the local keyboard state.
      *
      * @returns {boolean}
-     *     true if Ctrl+Alt+Shift has been pressed, false otherwise.
-     */  
+     *     true if Ctrl+Alt has been pressed, false otherwise.
+     */
     const isMenuShortcutPressed = function isMenuShortcutPressed(keyboard) {
 
-        // Ctrl+Alt+Shift has NOT been pressed if any key is currently held
-        // down that isn't Ctrl, Alt, or Shift
+        // Ctrl+Alt has NOT been pressed if any key is currently held
+        // down that isn't Ctrl or Alt
         if (_.findKey(keyboard.pressed, (val, keysym) => !MENU_KEYS[keysym]))
             return false;
 
-        // Verify that one of each required key is held, regardless of
-        // left/right location on the keyboard
+        // Verify that one Ctrl key and one Alt key are held
         return !!(
-                _.findKey(SHIFT_KEYS, (val, keysym) => keyboard.pressed[keysym])
-             && _.findKey(ALT_KEYS,   (val, keysym) => keyboard.pressed[keysym])
-             && _.findKey(CTRL_KEYS,  (val, keysym) => keyboard.pressed[keysym])
+                _.findKey(CTRL_KEYS, (val, keysym) => keyboard.pressed[keysym])
+             && _.findKey(ALT_KEYS,  (val, keysym) => keyboard.pressed[keysym])
         );
 
     };
@@ -454,7 +451,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     });
 
-    // Update client state/behavior as visibility of the Guacamole menu changes
+    // Update client state/behavior as visibility of the session menu changes
     $scope.$watch('menu.shown', function menuVisibilityChanged(menuShown, menuShownPreviousState) {
 
         // Re-update available connection parameters, if there is a focused
@@ -721,8 +718,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         }
     };
 
-    // Set client-specific menu actions
-    $scope.clientMenuActions = [ DISCONNECT_MENU_ACTION,FULLSCREEN_MENU_ACTION ];
+    // No menu actions exposed in the panel header (fullscreen and disconnect removed)
+    $scope.clientMenuActions = [];
 
     /**
      * @borrows Protocol.getNamespace
@@ -757,13 +754,24 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     };
 
     /**
-     * Returns whether the filesystem menu should be visible.
+     * Returns whether the filesystem panel should be visible.
+     * Decoupled from the main panel so the SFTP button can open it directly.
      *
      * @returns {Boolean}
-     *     true if the filesystem menu is shown, false otherwise.
+     *     true if the filesystem panel is shown, false otherwise.
      */
     $scope.isFilesystemMenuShown = function isFilesystemMenuShown() {
-        return !!$scope.filesystemMenuContents && $scope.menu.shown;
+        return !!$scope.filesystemMenuContents;
+    };
+
+    /**
+     * Opens the first available filesystem panel directly (e.g. from the
+     * persistent SFTP toolbar button), without requiring the main panel to
+     * be open first.
+     */
+    $scope.openFirstFilesystem = function openFirstFilesystem() {
+        if ($scope.focusedClient && $scope.focusedClient.filesystems.length > 0)
+            $scope.filesystemMenuContents = $scope.focusedClient.filesystems[0];
     };
 
     // Automatically refresh display when filesystem menu is shown

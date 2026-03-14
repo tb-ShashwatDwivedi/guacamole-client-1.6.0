@@ -7,29 +7,21 @@
 
             <!-- Central portion of view -->
             <div class="client-body" guac-touch-drag="menuDrag">
-
-                <!-- All connections in current display -->
                 <guac-tiled-clients
                     on-close="closeClientTile($client)"
                     client-group="clientGroup"
                     emulate-absolute-mouse="menu.emulateAbsoluteMouse">
                 </guac-tiled-clients>
-
             </div>
 
             <!-- Bottom portion of view -->
             <div class="client-bottom">
-
-                <!-- Text input -->
                 <div class="text-input-container" ng-if="showTextInput">
                     <guac-text-input></guac-text-input>
                 </div>
-
-                <!-- On-screen keyboard -->
                 <div class="keyboard-container" ng-if="showOSK">
                     <guac-osk layout="'CLIENT.URL_OSK_LAYOUT' | translate"></guac-osk>
                 </div>
-
             </div>
 
         </div>
@@ -44,150 +36,94 @@
     <div id="connection-warning" ng-show="isConnectionUnstable()">
         {{'CLIENT.TEXT_CLIENT_STATUS_UNSTABLE' | translate}}
     </div>
-    
-    <!-- Menu -->
-    <div class="menu" ng-class="{open: menu.shown}" id="guac-menu">
-        <div class="menu-content" ng-if="menu.shown" guac-touch-drag="menuDrag">
 
-            <!-- Stationary header -->
-            <div class="header">
-                <h2 ng-hide="rootConnectionGroups">{{ getName(clientGroup) }}</h2>
-                <h2 class="connection-select-menu" ng-show="rootConnectionGroups">
-                    <guac-menu menu-title="getName(clientGroup)" interactive="true">
-                        <div class="all-connections">
-                            <guac-group-list-filter connection-groups="rootConnectionGroups"
-                                filtered-connection-groups="filteredRootConnectionGroups"
-                                placeholder="'CLIENT.FIELD_PLACEHOLDER_FILTER' | translate"
-                                connection-properties="filteredConnectionProperties"
-                                connection-group-properties="filteredConnectionGroupProperties"></guac-group-list-filter>
-                            <guac-group-list
-                                connection-groups="filteredRootConnectionGroups"
-                                context="connectionListContext"
-                                templates="{
-                                    'connection'       : 'app/client/templates/connection.html',
-                                    'connection-group' : 'app/client/templates/connectionGroup.html'
-                                }"
-                                page-size="10"></guac-group-list>
-                        </div>
-                    </guac-menu>
-                </h2>
-                <div class="share-menu" ng-show="canShareConnection()">
-                    <guac-menu menu-title="'CLIENT.ACTION_SHARE' | translate">
-                        <ul ng-repeat="sharingProfile in sharingProfiles">
-                            <li><a ng-click="share(sharingProfile)">{{sharingProfile.name}}</a></li>
-                        </ul>
-                    </guac-menu>
+    <!-- ─── Persistent SFTP toolbar button ──────────────────────────────── -->
+    <div class="sra-sftp-fab"
+         ng-if="focusedClient.filesystems.length"
+         ng-click="openFirstFilesystem()"
+         title="Open File System">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span class="sra-sftp-fab-label">Files</span>
+    </div>
+
+    <!-- ─── Session Panel (Ctrl+Alt) ────────────────────────────────────── -->
+    <div class="menu sra-panel" ng-class="{open: menu.shown}" id="guac-menu">
+        <div class="menu-content sra-panel-content" ng-if="menu.shown" guac-touch-drag="menuDrag">
+
+            <!-- Panel header -->
+            <div class="header sra-panel-header">
+                <div class="sra-panel-header-left">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                    <span class="sra-panel-conn-name" ng-hide="rootConnectionGroups">{{ getName(clientGroup) }}</span>
+                    <span class="sra-panel-conn-name" ng-show="rootConnectionGroups">
+                        <guac-menu menu-title="getName(clientGroup)" interactive="true">
+                            <div class="all-connections">
+                                <guac-group-list-filter connection-groups="rootConnectionGroups"
+                                    filtered-connection-groups="filteredRootConnectionGroups"
+                                    placeholder="'CLIENT.FIELD_PLACEHOLDER_FILTER' | translate"
+                                    connection-properties="filteredConnectionProperties"
+                                    connection-group-properties="filteredConnectionGroupProperties"></guac-group-list-filter>
+                                <guac-group-list
+                                    connection-groups="filteredRootConnectionGroups"
+                                    context="connectionListContext"
+                                    templates="{
+                                        'connection'       : 'app/client/templates/connection.html',
+                                        'connection-group' : 'app/client/templates/connectionGroup.html'
+                                    }"
+                                    page-size="10"></guac-group-list>
+                            </div>
+                        </guac-menu>
+                    </span>
                 </div>
-                <guac-user-menu local-actions="clientMenuActions"></guac-user-menu>
+                <button class="sra-panel-close-btn" ng-click="menu.shown = false" title="Close panel">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
             </div>
 
-            <!-- Scrollable body -->
-            <div class="menu-body" guac-touch-drag="visibleMenuDrag" guac-scroll="menu.scrollState">
+            <!-- Panel body: only Clipboard + File System -->
+            <div class="menu-body sra-panel-body" guac-touch-drag="visibleMenuDrag" guac-scroll="menu.scrollState">
 
-                <!-- Connection sharing -->
-                <div class="menu-section" id="share-links" ng-show="isShared()">
-                    <div class="content">
-                        <h3>{{'CLIENT.INFO_CONNECTION_SHARED' | translate}}</h3>
-                        <p class="description"
-                           translate="CLIENT.HELP_SHARE_LINK"
-                           translate-values="{LINKS : getShareLinkCount()}"></p>
-                        <table>
-                            <tr ng-repeat="link in focusedClient.shareLinks | toArray | orderBy: value.name">
-                                <th>{{link.value.name}}</th>
-                                <td><a href="{{link.value.href}}" target="_blank">{{link.value.href}}</a></td>
-                            </tr>
-                        </table>
+                <!-- ── Clipboard ──────────────────────────────────────── -->
+                <div class="sra-panel-section" id="clipboard-settings">
+                    <div class="sra-section-header">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                        </svg>
+                        <span>Clipboard</span>
                     </div>
-                </div>
-
-                <!-- Clipboard -->
-                <div class="menu-section" id="clipboard-settings">
-                    <h3>{{'CLIENT.SECTION_HEADER_CLIPBOARD' | translate}}</h3>
-                    <div class="content">
-                        <p class="description">{{'CLIENT.HELP_CLIPBOARD' | translate}}</p>
+                    <div class="sra-section-body">
                         <guac-clipboard></guac-clipboard>
                     </div>
                 </div>
 
-                <!-- Devices -->
-                <div class="menu-section" id="devices" ng-if="focusedClient.filesystems.length">
-                    <h3>{{'CLIENT.SECTION_HEADER_DEVICES' | translate}}</h3>
-                    <div class="content">
-                        <div class="device filesystem" ng-repeat="filesystem in focusedClient.filesystems" ng-click="showFilesystemMenu(filesystem)">
-                            {{filesystem.name}}
-                        </div>
+                <!-- ── File System ─────────────────────────────────────── -->
+                <div class="sra-panel-section" id="devices" ng-if="focusedClient.filesystems.length">
+                    <div class="sra-section-header">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span>File System</span>
                     </div>
-                </div>
-
-                <!-- Connection parameters which may be modified while the connection is open -->
-                <div class="menu-section connection-parameters" id="connection-settings" ng-if="focusedClient.protocol">
-                    <guac-form namespace="getProtocolNamespace(focusedClient.protocol)"
-                               content="focusedClient.forms"
-                               model="menu.connectionParameters"
-                               client="focusedClient"
-                               model-only="true"></guac-form>
-                </div>
-
-                <!-- Input method -->
-                <div class="menu-section" id="keyboard-settings">
-                    <h3>{{'CLIENT.SECTION_HEADER_INPUT_METHOD' | translate}}</h3>
-                    <div class="content">
-
-                        <!-- No IME -->
-                        <div class="choice">
-                            <label><input id="ime-none" name="input-method" ng-change="closeMenu()" ng-model="menu.inputMethod" type="radio" value="none"> {{'CLIENT.NAME_INPUT_METHOD_NONE' | translate}}</label>
-                            <p class="caption"><label for="ime-none">{{'CLIENT.HELP_INPUT_METHOD_NONE' | translate}}</label></p>
-                        </div>
-
-                        <!-- Text input -->
-                        <div class="choice">
-                            <div class="figure"><label for="ime-text"><img src="images/settings/tablet-keys.svg" alt=""></label></div>
-                            <label><input id="ime-text" name="input-method" ng-change="closeMenu()" ng-model="menu.inputMethod" type="radio" value="text"> {{'CLIENT.NAME_INPUT_METHOD_TEXT' | translate}}</label>
-                            <p class="caption"><label for="ime-text">{{'CLIENT.HELP_INPUT_METHOD_TEXT' | translate}} </label></p>
-                        </div>
-
-                        <!-- Guac OSK -->
-                        <div class="choice">
-                            <label><input id="ime-osk" name="input-method" ng-change="closeMenu()" ng-model="menu.inputMethod" type="radio" value="osk"> {{'CLIENT.NAME_INPUT_METHOD_OSK' | translate}}</label>
-                            <p class="caption"><label for="ime-osk">{{'CLIENT.HELP_INPUT_METHOD_OSK' | translate}}</label></p>
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- Mouse mode -->
-                <div class="menu-section" id="mouse-settings">
-                    <h3>{{'CLIENT.SECTION_HEADER_MOUSE_MODE' | translate}}</h3>
-                    <div class="content">
-                        <p class="description">{{'CLIENT.HELP_MOUSE_MODE' | translate}}</p>
-
-                        <!-- Touchscreen -->
-                        <div class="choice">
-                            <input name="mouse-mode" ng-change="closeMenu()" ng-model="menu.emulateAbsoluteMouse" type="radio" ng-value="true" checked="checked" id="absolute">
-                            <div class="figure">
-                                <label for="absolute"><img src="images/settings/touchscreen.svg" alt="{{'CLIENT.NAME_MOUSE_MODE_ABSOLUTE' | translate}}"></label>
-                                <p class="caption"><label for="absolute">{{'CLIENT.HELP_MOUSE_MODE_ABSOLUTE' | translate}}</label></p>
-                            </div>
-                        </div>
-
-                        <!-- Touchpad -->
-                        <div class="choice">
-                            <input name="mouse-mode" ng-change="closeMenu()" ng-model="menu.emulateAbsoluteMouse" type="radio" ng-value="false" id="relative">
-                            <div class="figure">
-                                <label for="relative"><img src="images/settings/touchpad.svg" alt="{{'CLIENT.NAME_MOUSE_MODE_RELATIVE' | translate}}"></label>
-                                <p class="caption"><label for="relative">{{'CLIENT.HELP_MOUSE_MODE_RELATIVE' | translate}}</label></p>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- Display options -->
-                <div class="menu-section" id="display-settings" ng-if="focusedClient">
-                    <h3>{{'CLIENT.SECTION_HEADER_DISPLAY' | translate}}</h3>
-                    <div class="content">
-                        <div id="zoom-settings">
-                            <guac-client-zoom client="focusedClient"></guac-client-zoom>
+                    <div class="sra-section-body">
+                        <div class="sra-drive-btn"
+                             ng-repeat="filesystem in focusedClient.filesystems"
+                             ng-click="showFilesystemMenu(filesystem)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                            </svg>
+                            <span>{{filesystem.name}}</span>
+                            <svg class="sra-drive-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
                         </div>
                     </div>
                 </div>
@@ -197,15 +133,34 @@
         </div>
     </div>
 
-    <!-- Filesystem menu -->
-    <div id="filesystem-menu" class="menu" ng-class="{open: isFilesystemMenuShown()}">
-        <div class="menu-content">
+    <!-- ─── SFTP File System Panel ────────────────────────────────────────── -->
+    <div id="filesystem-menu" class="menu sra-panel" ng-class="{open: isFilesystemMenuShown()}">
+        <div class="menu-content sra-panel-content">
 
-            <!-- Stationary header -->
-            <div class="header">
-                <h2>{{filesystemMenuContents.name}}</h2>
-                <button class="upload button" guac-upload="uploadFiles">{{'CLIENT.ACTION_UPLOAD_FILES' | translate}}</button>
-                <button class="back" ng-click="hideFilesystemMenu()">{{'CLIENT.ACTION_NAVIGATE_BACK' | translate}}</button>
+            <!-- Header -->
+            <div class="header sra-panel-header sra-fs-header">
+                <div class="sra-panel-header-left">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <span class="sra-panel-conn-name">{{filesystemMenuContents.name}}</span>
+                </div>
+                <div class="sra-panel-header-right">
+                    <button class="sra-upload-btn" guac-upload="uploadFiles">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="16 16 12 12 8 16"></polyline>
+                            <line x1="12" y1="12" x2="12" y2="21"></line>
+                            <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"></path>
+                        </svg>
+                        Upload
+                    </button>
+                    <button class="sra-back-btn" ng-click="hideFilesystemMenu()">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                        Back
+                    </button>
+                </div>
             </div>
 
             <!-- Breadcrumbs -->
@@ -217,7 +172,7 @@
                         ng-click="changeDirectory(filesystemMenuContents, file)">{{file.name}}</div>
             </div>
 
-            <!-- Scrollable body -->
+            <!-- File list -->
             <div class="menu-body">
                 <guac-file-browser client="client" filesystem="filesystemMenuContents"></guac-file-browser>
             </div>

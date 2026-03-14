@@ -1,1 +1,3 @@
 src/main/frontend/dist/**/*
+src/main/frontend/src/index.html
+src/main/frontend/src/images/app-logo.svg

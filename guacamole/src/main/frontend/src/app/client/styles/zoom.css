@@ -17,59 +17,171 @@
  * under the License.
  */
 
-.client-zoom .client-zoom-out,
-.client-zoom .client-zoom-in,
-.client-zoom .client-zoom-state {
-    display: inline-block;
-    vertical-align: middle;
+/* ─── Zoom panel wrapper ─────────────────────────────────────────────────── */
+
+.sra-zoom-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.client-zoom .client-zoom-out,
-.client-zoom .client-zoom-in {
-    max-width: 3em;
-    border: 1px solid rgba(0, 0, 0, 0.5);
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 2em;
-    margin: 0.5em;
+/* ─── Auto-fit toggle row ────────────────────────────────────────────────── */
+
+.sra-autofit-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 10px;
+    border-radius: 7px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.02);
     cursor: pointer;
+    transition: background 0.12s, border-color 0.12s;
+    gap: 10px;
 }
 
-.client-zoom .client-zoom-out img,
-.client-zoom .client-zoom-in img {
-    width: 100%;
-    opacity: 0.5;
+.sra-autofit-toggle:hover {
+    background: rgba(74, 144, 217, 0.07);
+    border-color: rgba(74, 144, 217, 0.2);
 }
 
-.client-zoom .client-zoom-out:hover,
-.client-zoom .client-zoom-in:hover {
-    border: 1px solid rgba(0, 0, 0, 1);
-    background: #CDA;
+.sra-autofit-toggle.sra-autofit-on {
+    background: rgba(74, 144, 217, 0.1);
+    border-color: rgba(74, 144, 217, 0.3);
 }
 
-.client-zoom .client-zoom-out:hover img,
-.client-zoom .client-zoom-in:hover img {
-    opacity: 1;
+.sra-autofit-left {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #4a90d9;
+    flex: 1;
+    min-width: 0;
 }
 
-.client-zoom .client-zoom-state {
-    font-size: 1.5em;
+.sra-autofit-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
-.client-zoom .client-zoom-autofit {
-    text-align: left;
-    margin-top: 1em;
+.sra-autofit-label {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #c0d8f0;
 }
 
-.client-zoom .client-zoom-state input {
-    width: 2em;
-    font-size: 1em;
+.sra-autofit-desc {
+    font-size: 11px;
+    color: #5a7a9a;
+}
+
+/* ─── Toggle switch ──────────────────────────────────────────────────────── */
+
+.sra-toggle-switch {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.sra-toggle-switch input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.sra-toggle-track {
+    width: 34px;
+    height: 18px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 9px;
+    position: relative;
+    transition: background 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.sra-toggle-on .sra-toggle-track {
+    background: #2a6ab5;
+    border-color: #4a90d9;
+}
+
+.sra-toggle-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 12px;
+    height: 12px;
+    background: #6a8ab0;
+    border-radius: 50%;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.sra-toggle-on .sra-toggle-thumb {
+    transform: translateX(16px);
+    background: #ffffff;
+}
+
+/* ─── Manual zoom controls ───────────────────────────────────────────────── */
+
+.sra-zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 2px;
+}
+
+.sra-zoom-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid rgba(74, 144, 217, 0.25);
+    background: rgba(74, 144, 217, 0.08);
+    color: #6aaee8;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s;
     padding: 0;
-    background: transparent;
-    border-color: rgba(0, 0, 0, 0.125);
 }
 
-.client-zoom .client-zoom-state input::-webkit-inner-spin-button,
-.client-zoom .client-zoom-state input::-webkit-outer-spin-button {
+.sra-zoom-btn:hover {
+    background: rgba(74, 144, 217, 0.2);
+    border-color: rgba(74, 144, 217, 0.4);
+    color: #90c4f0;
+}
+
+.sra-zoom-value {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    flex: 1;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #90b0d0;
+}
+
+.sra-zoom-value input {
+    width: 48px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(74, 144, 217, 0.2);
+    border-radius: 5px;
+    color: #b0cce8;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 0;
+}
+
+.sra-zoom-value input:focus {
+    outline: none;
+    border-color: rgba(74, 144, 217, 0.5);
+    background: rgba(74, 144, 217, 0.08);
+}
+
+.sra-zoom-value input::-webkit-inner-spin-button,
+.sra-zoom-value input::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }

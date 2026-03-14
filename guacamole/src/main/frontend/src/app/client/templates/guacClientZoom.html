@@ -1,18 +1,45 @@
-<div class="client-zoom">
-    <div class="client-zoom-editor">
-        <div ng-click="zoomOut()" class="client-zoom-out"><img src="images/settings/zoom-out.svg" alt="-"></div>
-        <div class="client-zoom-state">
-            <input type="number" guac-zoom-ctrl
-                    ng-model="client.clientProperties.scale"
-                    ng-model-options="{ updateOn: 'blur submit' }"
-                    ng-change="zoomSet()">%
+<div class="sra-zoom-panel">
+
+    <!-- Auto-fit toggle (primary control, always shown at top) -->
+    <label class="sra-autofit-toggle" ng-class="{'sra-autofit-on': client.clientProperties.autoFit}">
+        <div class="sra-autofit-left">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <polyline points="9 21 3 21 3 15"></polyline>
+                <line x1="21" y1="3" x2="14" y2="10"></line>
+                <line x1="3" y1="21" x2="10" y2="14"></line>
+            </svg>
+            <div class="sra-autofit-text">
+                <span class="sra-autofit-label">Fit to Window</span>
+                <span class="sra-autofit-desc">Automatically scale to browser window</span>
+            </div>
         </div>
-        <div ng-click="zoomIn()" class="client-zoom-in"><img src="images/settings/zoom-in.svg" alt="+"></div>
+        <div class="sra-toggle-switch" ng-class="{'sra-toggle-on': client.clientProperties.autoFit}">
+            <input type="checkbox"
+                   ng-model="client.clientProperties.autoFit"
+                   ng-change="autoFitChanged()"
+                   ng-disabled="autoFitDisabled()">
+            <div class="sra-toggle-track">
+                <div class="sra-toggle-thumb"></div>
+            </div>
+        </div>
+    </label>
+
+    <!-- Manual zoom controls (only shown when auto-fit is off) -->
+    <div class="sra-zoom-controls" ng-show="!client.clientProperties.autoFit">
+        <button class="sra-zoom-btn" ng-click="zoomOut()" title="Zoom out">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
+        <div class="sra-zoom-value">
+            <input type="number" guac-zoom-ctrl
+                   ng-model="client.clientProperties.scale"
+                   ng-model-options="{ updateOn: 'blur submit' }"
+                   ng-change="zoomSet()">
+            <span>%</span>
+        </div>
+        <button class="sra-zoom-btn" ng-click="zoomIn()" title="Zoom in">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
     </div>
-    <div class="client-zoom-autofit">
-        <label><input ng-model="client.clientProperties.autoFit"
-                      ng-change="changeAutoFit()"
-                      ng-disabled="autoFitDisabled()" type="checkbox" id="auto-fit">
-            {{'CLIENT.TEXT_ZOOM_AUTO_FIT' | translate}}</label>
-    </div>
+
 </div>

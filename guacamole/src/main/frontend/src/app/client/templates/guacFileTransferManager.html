@@ -1,21 +1,32 @@
-<div class="transfer-manager">
+<div class="sra-transfer-panel">
 
-    <!-- File transfer manager header -->
-    <div class="header">
-        <h2>{{'CLIENT.SECTION_HEADER_FILE_TRANSFERS' | translate}}</h2>
-        <button ng-click="clearCompletedTransfers()">{{'CLIENT.ACTION_CLEAR_COMPLETED_TRANSFERS' | translate}}</button>
+    <div class="sra-transfer-panel-header">
+        <div class="sra-transfer-panel-title">
+            <span class="sra-transfer-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="8 17 12 21 16 17"></polyline>
+                    <line x1="12" y1="12" x2="12" y2="21"></line>
+                    <path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"></path>
+                </svg>
+            </span>
+            <span>{{'CLIENT.SECTION_HEADER_FILE_TRANSFERS' | translate}}</span>
+        </div>
+        <button class="sra-transfer-clear-btn" ng-click="clearCompletedTransfers()">
+            {{'CLIENT.ACTION_CLEAR_COMPLETED_TRANSFERS' | translate}}
+        </button>
     </div>
 
-    <!-- Sent/received files -->
-    <div class="transfer-manager-body">
-        <div class="transfer-manager-body-section" ng-repeat="client in clientGroup.clients" ng-show="hasTransfers(client)">
-            <h3 ng-show="hasMultipleClients(clientGroup)">{{ client.name }}</h3>
-            <div class="transfers">
-                <guac-file-transfer
-                    transfer="upload"
-                    ng-repeat="upload in client.uploads">
-                </guac-file-transfer>
+    <div class="sra-transfer-list">
+        <div class="sra-transfer-client-group"
+             ng-repeat="client in clientGroup.clients"
+             ng-show="hasTransfers(client)">
+            <div class="sra-transfer-client-label" ng-show="hasMultipleClients(clientGroup)">
+                {{ client.name }}
             </div>
+            <guac-file-transfer
+                transfer="upload"
+                ng-repeat="upload in client.uploads">
+            </guac-file-transfer>
         </div>
     </div>
 

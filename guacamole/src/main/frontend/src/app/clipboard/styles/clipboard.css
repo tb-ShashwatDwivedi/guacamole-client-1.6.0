@@ -17,91 +17,105 @@
  * under the License.
  */
 
-.clipboard, .clipboard-service-target {
-    background: white;
-}
+/* ─── Hidden service target (internal clipboard sync) ───────────────────── */
 
-.clipboard  {
-    position: relative;
-    border: 1px solid #AAA;
-    -moz-border-radius: 0.25em;
-    -webkit-border-radius: 0.25em;
-    -khtml-border-radius: 0.25em;
-    border-radius: 0.25em;
-    width: 100%;
-    height: 2in;
+.clipboard-service-target {
+    position: fixed;
+    left: -1em;
+    top: -1em;
+    width: 1em;
+    height: 1em;
     white-space: pre;
-    padding: 0.25em;
+    overflow: hidden;
+    background: transparent;
+    color: transparent;
 }
 
-.clipboard p,
-.clipboard div {
-    margin: 0;
+/* ─── Clipboard container ────────────────────────────────────────────────── */
+
+.sra-clipboard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
+/* ─── Locked overlay ─────────────────────────────────────────────────────── */
+
+.sra-clipboard-locked {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed rgba(74, 144, 217, 0.25);
+    border-radius: 8px;
+    cursor: pointer;
+    color: #4a6a8a;
+    font-size: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    min-height: 80px;
+}
+
+.sra-clipboard-locked:hover {
+    background: rgba(74, 144, 217, 0.07);
+    border-color: rgba(74, 144, 217, 0.45);
+    color: #7aaad0;
+}
+
+/* ─── Clipboard textarea ─────────────────────────────────────────────────── */
+
+.sra-clipboard-editor {
+    width: 100%;
+    min-height: 130px;
+    max-height: 200px;
+    resize: vertical;
+    padding: 10px 12px;
+    background: rgba(10, 16, 30, 0.7);
+    border: 1px solid rgba(74, 144, 217, 0.2);
+    border-radius: 8px;
+    color: #b8d8f0;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.55;
+    white-space: pre;
+    overflow: auto;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-sizing: border-box;
+}
+
+.sra-clipboard-editor:focus {
+    border-color: rgba(74, 144, 217, 0.5);
+    box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.1);
+}
+
+.sra-clipboard-editor::placeholder {
+    color: rgba(74, 114, 154, 0.5);
+    font-style: italic;
+    font-size: 11px;
+}
+
+.sra-clipboard-editor::-webkit-scrollbar { width: 4px; }
+.sra-clipboard-editor::-webkit-scrollbar-track { background: transparent; }
+.sra-clipboard-editor::-webkit-scrollbar-thumb { background: rgba(74,144,217,0.25); border-radius: 2px; }
+
+/* Hidden state (content blur) */
+.sra-clipboard-editor.clipboard-contents-hidden {
+    color: transparent;
+    overflow: hidden;
+    text-shadow: 0 0 8px rgba(74, 144, 217, 0.4);
+}
+
+/* Image clipboard content */
 .clipboard img {
     max-width: 100%;
     max-height: 100%;
     display: block;
     margin: 0 auto;
-    border: 1px solid black;
+    border: 1px solid rgba(74, 144, 217, 0.3);
+    border-radius: 4px;
     background: url('images/checker.svg');
-}
-
-.clipboard-service-target {
-    position: fixed;
-    left: -1em;
-    right: -1em;
-    width: 1em;
-    height: 1em;
-    white-space: pre;
-    overflow: hidden;
-}
-
-.clipboard-editor {
-    position: relative;
-}
-
-.clipboard-editor .clipboard {
-    overflow: auto;
-    font-size: 1em;
-}
-
-.clipboard-editor .clipboard.clipboard-contents-hidden {
-    color: transparent;
-    overflow: hidden;
-}
-
-.clipboard-editor .clipboard-contents-hidden-hint {
-
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    cursor: pointer;
-
-    display: flex;
-    align-items: center;
-
-}
-
-.clipboard-editor .clipboard-contents-hidden-hint .clipboard-contents-hidden-hint-text {
-
-    flex: 1;
-
-    background: rgba(0, 0, 0, 0.125);
-    color: #888;
-
-    padding: 0.5em;
-    overflow: hidden;
-    font-size: 0.9em;
-    text-align: center;
-    font-style: italic;
-
-}
-
-.clipboard-editor .clipboard-contents-hidden-hint:hover .clipboard-contents-hidden-hint-text {
-    text-decoration: underline;
 }
