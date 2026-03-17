@@ -139,6 +139,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         addMapperClass(ConnectionGroupPermissionMapper.class);
         addMapperClass(ConnectionPermissionMapper.class);
         addMapperClass(ConnectionRecordMapper.class);
+        addMapperClass(org.apache.guacamole.auth.jdbc.livemonitoring.LiveMonitoringKeyMapper.class);
         addMapperClass(ConnectionParameterMapper.class);
         addMapperClass(EntityMapper.class);
         addMapperClass(PasswordRecordMapper.class);
@@ -188,6 +189,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(ConnectionGroupService.class);
         bind(ConnectionPermissionService.class);
         bind(ConnectionSharingService.class);
+        bind(org.apache.guacamole.auth.jdbc.livemonitoring.LiveMonitoringKeyService.class);
         bind(ConnectionService.class);
         bind(EntityService.class);
         bind(GuacamoleTunnelService.class).to(RestrictedGuacamoleTunnelService.class);

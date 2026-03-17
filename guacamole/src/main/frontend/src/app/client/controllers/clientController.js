@@ -378,7 +378,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      */
     $scope.sharingProfiles = {};
 
-    /**
+    /*
+    *
      * Map of all substituted key presses.  If one key is pressed in place of another
      * the value of the substituted key is stored in an object with the keysym of
      * the original key.

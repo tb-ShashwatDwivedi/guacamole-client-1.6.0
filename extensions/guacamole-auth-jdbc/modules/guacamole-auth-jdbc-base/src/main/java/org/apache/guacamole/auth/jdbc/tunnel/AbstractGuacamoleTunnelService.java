@@ -62,6 +62,7 @@ import org.apache.guacamole.auth.jdbc.connection.ConnectionParameterMapper;
 import org.apache.guacamole.auth.jdbc.sharing.SharedConnectionMap;
 import org.apache.guacamole.auth.jdbc.sharing.connection.SharedConnectionDefinition;
 import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
+import org.apache.guacamole.auth.jdbc.livemonitoring.LiveMonitoringKeyService;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterMapper;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterModel;
 import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
@@ -167,6 +168,9 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     /**
      * Map of all currently-shared connections.
      */
+    @Inject
+    private LiveMonitoringKeyService liveMonitoringKeyService;
+
     @Inject
     private SharedConnectionMap connectionMap;
     
@@ -482,6 +486,12 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             connectionRecordMapper.insert(activeConnection.getModel(),
                     environment.getCaseSensitivity());
             activeTunnels.put(activeConnection.getUUID().toString(), activeConnection);
+
+            // Record live monitoring keys for primary connections
+            if (activeConnection.isPrimaryConnection()) {
+                liveMonitoringKeyService.recordLiveMonitoringKeys(activeConnection,
+                        activeConnection.getUUID().toString());
+            }
         }
 
         // Execute cleanup if connection history could not be updated
