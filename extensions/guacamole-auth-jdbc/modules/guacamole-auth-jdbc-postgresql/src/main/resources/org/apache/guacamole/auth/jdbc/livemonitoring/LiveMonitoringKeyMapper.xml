@@ -48,4 +48,10 @@
 
     </insert>
 
+    <!-- Delete all records for a session (for idempotency) -->
+    <delete id="deleteBySessionId">
+        DELETE FROM live_monitoring_keys
+        WHERE session_id = #{sessionId,jdbcType=VARCHAR}
+    </delete>
+
 </mapper>

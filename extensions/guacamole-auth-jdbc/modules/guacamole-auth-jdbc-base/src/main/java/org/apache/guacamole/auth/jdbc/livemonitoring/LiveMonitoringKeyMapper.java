@@ -37,4 +37,17 @@ public interface LiveMonitoringKeyMapper {
      */
     int insert(@Param("record") LiveMonitoringKeyModel record);
 
+    /**
+     * Deletes all live monitoring key records for the given session.
+     * Used to make recordLiveMonitoringKeys idempotent when called
+     * multiple times for the same session.
+     *
+     * @param sessionId
+     *     The session ID whose records should be deleted.
+     *
+     * @return
+     *     The number of rows deleted.
+     */
+    int deleteBySessionId(@Param("sessionId") String sessionId);
+
 }
