@@ -54,4 +54,11 @@
         WHERE session_id = #{sessionId,jdbcType=VARCHAR}
     </delete>
 
+    <!-- Mark session as closed (is_active = false) -->
+    <update id="updateIsActiveFalseForSession">
+        UPDATE live_monitoring_keys
+        SET is_active = false
+        WHERE session_id = #{sessionId,jdbcType=VARCHAR}
+    </update>
+
 </mapper>

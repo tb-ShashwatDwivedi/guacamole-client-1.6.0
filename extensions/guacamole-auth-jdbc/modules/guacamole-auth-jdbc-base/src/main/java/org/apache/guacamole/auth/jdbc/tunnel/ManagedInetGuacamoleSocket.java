@@ -59,8 +59,11 @@ public class ManagedInetGuacamoleSocket extends InetGuacamoleSocket {
 
     @Override
     public void close() throws GuacamoleException {
-        super.close();
-        socketClosedTask.run();
+        try {
+            super.close();
+        } finally {
+            socketClosedTask.run();
+        }
     }
     
 }

@@ -30,6 +30,7 @@ import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.auth.jdbc.base.DirectoryObjectService;
+import org.apache.guacamole.auth.jdbc.livemonitoring.LiveMonitoringKeyService;
 import org.apache.guacamole.auth.jdbc.tunnel.ActiveConnectionRecord;
 import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.apache.guacamole.net.GuacamoleTunnel;
@@ -55,6 +56,12 @@ public class ActiveConnectionService
      */
     @Inject
     private Provider<TrackedActiveConnection> trackedActiveConnectionProvider;
+
+    /**
+     * Service for updating live monitoring keys when sessions close.
+     */
+    @Inject
+    private LiveMonitoringKeyService liveMonitoringKeyService;
     
     @Override
     public TrackedActiveConnection retrieveObject(ModeledAuthenticatedUser user,
@@ -114,22 +121,21 @@ public class ActiveConnectionService
     public void deleteObject(ModeledAuthenticatedUser user, String identifier)
         throws GuacamoleException {
 
-        // Close connection, if it exists and we have permission
+        if (!hasObjectPermissions(user, identifier, ObjectPermission.Type.DELETE))
+            throw new GuacamoleSecurityException("Permission denied.");
+
+        // Mark live_monitoring_keys as inactive (handles multi-instance:
+        // session may be on another Tomcat instance, but DB update applies globally)
+        liveMonitoringKeyService.markSessionClosed(identifier);
+
+        // Close connection if it exists on this instance
         ActiveConnection activeConnection = retrieveObject(user, identifier);
         if (activeConnection == null)
             return;
-        
-        if (hasObjectPermissions(user, identifier, ObjectPermission.Type.DELETE)) {
 
-            // Close connection if not already closed
-            GuacamoleTunnel tunnel = activeConnection.getTunnel();
-            if (tunnel != null && tunnel.isOpen())
-                tunnel.close();
-
-        }
-        else
-            throw new GuacamoleSecurityException("Permission denied.");
-        
+        GuacamoleTunnel tunnel = activeConnection.getTunnel();
+        if (tunnel != null && tunnel.isOpen())
+            tunnel.close();
     }
 
     @Override

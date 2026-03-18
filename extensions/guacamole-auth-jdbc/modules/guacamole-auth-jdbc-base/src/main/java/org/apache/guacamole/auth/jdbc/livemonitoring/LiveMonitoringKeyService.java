@@ -20,12 +20,17 @@
 package org.apache.guacamole.auth.jdbc.livemonitoring;
 
 import com.google.inject.Inject;
+import java.nio.ByteBuffer;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordSet;
+import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordMapper;
 import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.apache.guacamole.auth.jdbc.sharing.ConnectionSharingService;
 import org.apache.guacamole.auth.jdbc.sharing.connection.SharedConnectionDefinition;
@@ -89,6 +94,9 @@ public class LiveMonitoringKeyService {
 
     @Inject
     private JDBCEnvironment environment;
+
+    @Inject
+    private ConnectionRecordMapper connectionRecordMapper;
 
     /**
      * Records live monitoring keys for the given active connection. For each
@@ -278,6 +286,67 @@ public class LiveMonitoringKeyService {
         record.setExpiresAt(expiresAt);
         record.setIsActive(true);
         liveMonitoringKeyMapper.insert(record);
+    }
+
+    /**
+     * Marks all live monitoring key records for the given session as closed
+     * (is_active = false). Called when a session ends so that closed sessions
+     * can be identified.
+     *
+     * @param sessionId
+     *     The UUID of the connection history/session that has closed.
+     */
+    public void markSessionClosed(String sessionId) {
+        try {
+            int updated = liveMonitoringKeyMapper.updateIsActiveFalseForSession(sessionId);
+            if (updated > 0) {
+                logger.debug("Marked {} live monitoring key record(s) as inactive for session {}",
+                        updated, sessionId);
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to mark live monitoring keys as inactive for session {}: {}",
+                    sessionId, e.getMessage());
+        }
+    }
+
+    /**
+     * Syncs live_monitoring_keys.is_active with guacamole_connection_history.
+     * Marks sessions as inactive when connection_history has end_date set.
+     * Catches cases where the cleanup callback did not run (e.g. crash, multi-instance).
+     */
+    public void syncClosedSessionsFromHistory() {
+        try {
+            List<Integer> closedHistoryIds = connectionRecordMapper.selectHistoryIdsWithEndDate();
+            int marked = 0;
+            for (Integer historyId : closedHistoryIds) {
+                String sessionId = historyIdToSessionId(historyId);
+                int updated = liveMonitoringKeyMapper.updateIsActiveFalseForSession(sessionId);
+                if (updated > 0) {
+                    marked += updated;
+                }
+            }
+            if (marked > 0) {
+                logger.info("Synced {} live monitoring key record(s) from connection history",
+                        marked);
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to sync live monitoring keys from connection history: {}",
+                    e.getMessage());
+        }
+    }
+
+    /**
+     * Converts a connection history record ID to the session UUID string.
+     * Uses the same algorithm as ModeledActivityRecord.getUUID().
+     */
+    private static String historyIdToSessionId(Integer historyId) {
+        UUID namespace = ConnectionRecordSet.UUID_NAMESPACE;
+        UUID uuid = UUID.nameUUIDFromBytes(ByteBuffer.allocate(24)
+                .putLong(namespace.getMostSignificantBits())
+                .putLong(namespace.getLeastSignificantBits())
+                .putLong(historyId != null ? historyId : 0)
+                .array());
+        return uuid.toString();
     }
 
     /**

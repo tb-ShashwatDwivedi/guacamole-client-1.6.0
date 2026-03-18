@@ -79,6 +79,7 @@ import org.apache.guacamole.auth.jdbc.sharing.SharedConnectionMap;
 import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileDirectory;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileMapper;
+import org.apache.guacamole.auth.jdbc.livemonitoring.LiveMonitoringSyncScheduler;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterMapper;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileService;
 import org.apache.guacamole.auth.jdbc.tunnel.RestrictedGuacamoleTunnelService;
@@ -190,6 +191,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(ConnectionPermissionService.class);
         bind(ConnectionSharingService.class);
         bind(org.apache.guacamole.auth.jdbc.livemonitoring.LiveMonitoringKeyService.class);
+        bind(LiveMonitoringSyncScheduler.class).asEagerSingleton();
         bind(ConnectionService.class);
         bind(EntityService.class);
         bind(GuacamoleTunnelService.class).to(RestrictedGuacamoleTunnelService.class);

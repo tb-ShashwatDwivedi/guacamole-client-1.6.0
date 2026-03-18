@@ -50,4 +50,16 @@ public interface LiveMonitoringKeyMapper {
      */
     int deleteBySessionId(@Param("sessionId") String sessionId);
 
+    /**
+     * Sets is_active to false for all records matching the given session.
+     * Called when a session is closed so that closed sessions can be identified.
+     *
+     * @param sessionId
+     *     The session ID whose records should be marked inactive.
+     *
+     * @return
+     *     The number of rows updated.
+     */
+    int updateIsActiveFalseForSession(@Param("sessionId") String sessionId);
+
 }

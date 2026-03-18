@@ -77,6 +77,15 @@
 
     </insert>
 
+    <!-- Select history_ids of closed sessions (have end_date), most recent first, limited -->
+    <select id="selectHistoryIdsWithEndDate" resultType="java.lang.Integer">
+        SELECT history_id
+        FROM guacamole_connection_history
+        WHERE end_date IS NOT NULL
+        ORDER BY end_date DESC
+        LIMIT 10000
+    </select>
+
     <!-- Update the given connection record, assigning an end date -->
     <update id="updateEndDate" parameterType="org.apache.guacamole.auth.jdbc.connection.ConnectionRecordModel">
         UPDATE guacamole_connection_history

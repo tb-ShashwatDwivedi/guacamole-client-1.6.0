@@ -19,9 +19,22 @@
 
 package org.apache.guacamole.auth.jdbc.connection;
 
+import java.util.List;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordMapper;
 
 /**
  * Mapper for connection record objects.
  */
-public interface ConnectionRecordMapper extends ActivityRecordMapper<ConnectionRecordModel> {}
+public interface ConnectionRecordMapper extends ActivityRecordMapper<ConnectionRecordModel> {
+
+    /**
+     * Returns the history_id values of all connection history records that have
+     * an end_date set (i.e. the session has closed). Used to sync
+     * live_monitoring_keys.is_active with the connection history.
+     *
+     * @return
+     *     List of history_id values for closed sessions.
+     */
+    List<Integer> selectHistoryIdsWithEndDate();
+
+}

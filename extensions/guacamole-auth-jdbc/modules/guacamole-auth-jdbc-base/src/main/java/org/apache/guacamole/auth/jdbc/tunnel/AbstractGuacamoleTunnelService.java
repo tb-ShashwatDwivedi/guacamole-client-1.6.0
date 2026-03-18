@@ -409,8 +409,13 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
 
             // Remove underlying tunnel from list of active tunnels
             UUID uuid = activeConnection.getUUID(); // May be null if record not successfully inserted
-            if (uuid != null)
+            if (uuid != null) {
                 activeTunnels.remove(uuid.toString());
+                // Mark live monitoring keys as inactive for this session
+                if (activeConnection.isPrimaryConnection()) {
+                    liveMonitoringKeyService.markSessionClosed(uuid.toString());
+                }
+            }
 
             // Get original user
             RemoteAuthenticatedUser user = activeConnection.getUser();

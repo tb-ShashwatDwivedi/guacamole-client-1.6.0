@@ -37,6 +37,14 @@
         <result column="end_date"             property="endDate"                  jdbcType="TIMESTAMP"/>
     </resultMap>
 
+    <!-- Select history_ids of closed sessions (have end_date), most recent first, limited -->
+    <select id="selectHistoryIdsWithEndDate" resultType="java.lang.Integer">
+        SELECT TOP 10000 history_id
+        FROM [guacamole_connection_history]
+        WHERE end_date IS NOT NULL
+        ORDER BY end_date DESC
+    </select>
+
     <!-- Update the given connection record, assigning an end date -->
     <update id="updateEndDate" parameterType="org.apache.guacamole.auth.jdbc.connection.ConnectionRecordModel">
         UPDATE [guacamole_connection_history]
