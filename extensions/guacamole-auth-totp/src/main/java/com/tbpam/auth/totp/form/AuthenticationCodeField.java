@@ -17,7 +17,8 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.totp.form;
+
+package com.tbpam.auth.totp.form;
 
 import com.google.common.io.BaseEncoding;
 import com.google.inject.Inject;
@@ -31,10 +32,10 @@ import java.io.IOException;
 import java.net.URI;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.totp.user.UserTOTPKey;
-import org.apache.guacamole.auth.totp.conf.ConfigurationService;
+import com.tbpam.auth.totp.user.UserTOTPKey;
+import com.tbpam.auth.totp.conf.ConfigurationService;
 import org.apache.guacamole.form.Field;
-import org.apache.guacamole.totp.TOTPGenerator;
+import com.tbpam.totp.TOTPGenerator;
 
 /**
  * Field which prompts the user for an authentication code generated via TOTP.
@@ -45,12 +46,12 @@ public class AuthenticationCodeField extends Field {
      * The name of the HTTP parameter which will contain the TOTP code provided
      * by the user to verify their identity.
      */
-    public static final String PARAMETER_NAME = "guac-totp";
+    public static final String PARAMETER_NAME = "tbpam-totp";
 
     /**
      * The unique name associated with this field type.
      */
-    private static final String FIELD_TYPE_NAME = "GUAC_TOTP_CODE";
+    private static final String FIELD_TYPE_NAME = "TBPAM_TOTP_CODE";
 
     /**
      * The width of QR codes to generate, in pixels.
@@ -146,8 +147,8 @@ public class AuthenticationCodeField extends Field {
      *     The number of digits used for each TOTP code, or null if the user's
      *     key is not being exposed to facilitate enrollment.
      *
-     * @throws GuacamoleException
-     *     If the number of digits cannot be read from guacamole.properties.
+     * @throws Exception
+     *     If the number of digits cannot be read from the configuration properties file.
      */
     public Integer getDigits() throws GuacamoleException {
 
@@ -168,8 +169,8 @@ public class AuthenticationCodeField extends Field {
      *     The human-readable name of the entity issuing user accounts, or null
      *     if the user's key is not being exposed to facilitate enrollment.
      *
-     * @throws GuacamoleException
-     *     If the issuer cannot be read from guacamole.properties.
+     * @throws Exception
+     *     If the issuer cannot be read from the configuration properties file.
      */
     public String getIssuer() throws GuacamoleException {
 
@@ -192,8 +193,8 @@ public class AuthenticationCodeField extends Field {
      *     "SHA256", or "SHA512", or null if the user's key is not being
      *     exposed to facilitate enrollment.
      *
-     * @throws GuacamoleException
-     *     If the TOTP mode cannot be read from guacamole.properties.
+     * @throws Exception
+     *     If the TOTP mode cannot be read from the configuration properties file.
      */
     public TOTPGenerator.Mode getMode() throws GuacamoleException {
 
@@ -214,8 +215,8 @@ public class AuthenticationCodeField extends Field {
      *     The number of seconds that each TOTP code remains valid, or null if
      *     the user's key is not being exposed to facilitate enrollment.
      *
-     * @throws GuacamoleException
-     *     If the period cannot be read from guacamole.properties.
+     * @throws Exception
+     *     If the period cannot be read from the configuration properties file.
      */
     public Integer getPeriod() throws GuacamoleException {
 
@@ -237,9 +238,9 @@ public class AuthenticationCodeField extends Field {
      *     for the current user, or null is the secret ket is not being exposed
      *     to facilitate enrollment.
      *
-     * @throws GuacamoleException
+     * @throws Exception
      *     If the configuration information required for generating the key URI
-     *     cannot be read from guacamole.properties.
+     *     cannot be read from the configuration properties file.
      */
     public URI getKeyUri() throws GuacamoleException {
 
@@ -270,9 +271,9 @@ public class AuthenticationCodeField extends Field {
      *     configuration, or null if the key is not being exposed for
      *     enrollment.
      *
-     * @throws GuacamoleException
+     * @throws Exception
      *     If the configuration information required for generating the QR code
-     *     cannot be read from guacamole.properties.
+     *     cannot be read from the configuration properties file.
      */
     public String getQrCode() throws GuacamoleException {
 

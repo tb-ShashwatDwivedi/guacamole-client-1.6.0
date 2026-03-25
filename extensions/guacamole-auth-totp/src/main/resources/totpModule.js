@@ -17,12 +17,13 @@
  * under the License.
  */
 
+
 /**
  * Module which provides handling for TOTP multi-factor authentication.
  */
-angular.module('guacTOTP', [
+angular.module('tbpamTOTP', [
     'form'
 ]);
 
-// Ensure the guacTOTP module is loaded along with the rest of the app
-angular.module('index').requires.push('guacTOTP');
+// Ensure the tbpamTOTP module is loaded along with the rest of the app
+angular.module('index').requires.push('tbpamTOTP');

@@ -1,8 +1,8 @@
 {
 
-    "guacamoleVersion" : "1.6.0",
+    "guacamoleVersion" : "${project.version}",
 
-    "name"      : "TOTP TFA Authentication Backend",
+    "name"      : "tbPAM TOTP MFA",
     "namespace" : "totp",
 
     "authProviders" : [
@@ -19,6 +19,7 @@
         "translations/pl.json",
         "translations/pt.json",
         "translations/ru.json",
+        "translations/tr.json",
         "translations/zh.json"
     ],
 

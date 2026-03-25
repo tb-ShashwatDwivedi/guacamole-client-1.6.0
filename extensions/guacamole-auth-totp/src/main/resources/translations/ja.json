@@ -1,5 +1,13 @@
 {
 
+    "DATA_SOURCE_TOTP" : {
+        "NAME" : "tbPAM TOTP MFA"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_TBPAM_TOTP" : ""
+    },
+
     "TOTP" : {
 
         "ACTION_HIDE_DETAILS" : "非表示",
@@ -20,6 +28,24 @@
         "HELP_ENROLL_VERIFY"  : "QRコードを読み込み、表示された {DIGITS}桁の認証コードを入力してください。",
 
         "SECTION_HEADER_DETAILS" : "詳細:"
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_TBPAM_TOTP_DISABLED"      : "TOTP を無効にする:",
+        "FIELD_HEADER_TBPAM_TOTP_KEY_GENERATED" : "秘密鍵を生成済み:",
+        "FIELD_HEADER_TBPAM_TOTP_KEY_CONFIRMED" : "認証デバイスを確認済み:",
+
+        "SECTION_HEADER_TOTP_ENROLLMENT_STATUS" : "TOTP 登録状態"
+
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_TBPAM_TOTP_DISABLED" : "TOTP を無効にする:",
+
+        "SECTION_HEADER_TOTP_USER_GROUP_CONFIG" : "TOTP 設定"
 
     }
 

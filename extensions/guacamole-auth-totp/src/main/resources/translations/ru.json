@@ -1,7 +1,7 @@
 {
 
     "DATA_SOURCE_TOTP" : {
-        "NAME" : "Бэкенд TOTP TFA"
+        "NAME" : "tbPAM TOTP MFA"
     },
 
     "TOTP" : {
@@ -24,6 +24,28 @@
         "HELP_ENROLL_VERIFY"  : "После сканирования штрихкода введите {DIGITS}-циферный код доступа, полученный на вашем устройстве, для проверки и завершения процедуры.",
 
         "SECTION_HEADER_DETAILS" : "Дополнительно:"
+
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_TBPAM_TOTP" : ""
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_TBPAM_TOTP_DISABLED"      : "Отключить TOTP:",
+        "FIELD_HEADER_TBPAM_TOTP_KEY_GENERATED" : "Секретный ключ создан:",
+        "FIELD_HEADER_TBPAM_TOTP_KEY_CONFIRMED" : "Устройство аутентификации подтверждено:",
+
+        "SECTION_HEADER_TOTP_ENROLLMENT_STATUS" : "Статус регистрации TOTP"
+
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_TBPAM_TOTP_DISABLED" : "Отключить TOTP:",
+
+        "SECTION_HEADER_TOTP_USER_GROUP_CONFIG" : "Конфигурация TOTP"
 
     }
 

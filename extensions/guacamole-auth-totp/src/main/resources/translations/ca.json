@@ -1,11 +1,11 @@
 {
 
     "DATA_SOURCE_TOTP" : {
-        "NAME" : "TOTP TFA Backend"
+        "NAME" : "tbPAM TOTP MFA"
     },
 
     "LOGIN" : {
-        "FIELD_HEADER_GUAC_TOTP" : ""
+        "FIELD_HEADER_TBPAM_TOTP" : ""
     },
 
     "TOTP" : {

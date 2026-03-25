@@ -205,6 +205,28 @@ angular.module('form').provider('formService', function formServiceProvider() {
             module      : 'form',
             controller  : 'redirectFieldController',
             templateUrl : 'app/form/templates/redirectField.html'
+        },
+
+        /**
+         * TOTP MFA code entry and enrollment (Apache guacamole-auth-totp).
+         *
+         * @type FieldType
+         */
+        'GUAC_TOTP_CODE' : {
+            module      : 'form',
+            controller  : 'totpCodeFieldController',
+            templateUrl : 'app/form/templates/totpCodeField.html'
+        },
+
+        /**
+         * TOTP MFA code entry and enrollment (tbPAM / renamed extension).
+         *
+         * @type FieldType
+         */
+        'TBPAM_TOTP_CODE' : {
+            module      : 'form',
+            controller  : 'totpCodeFieldController',
+            templateUrl : 'app/form/templates/totpCodeField.html'
         }
 
     };

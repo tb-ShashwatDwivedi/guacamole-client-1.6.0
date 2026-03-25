@@ -1,11 +1,11 @@
 {
 
     "DATA_SOURCE_TOTP" : {
-        "NAME" : "TOTP TFA 后端"
+        "NAME" : "tbPAM TOTP MFA"
     },
 
     "LOGIN" : {
-        "FIELD_HEADER_GUAC_TOTP" : ""
+        "FIELD_HEADER_TBPAM_TOTP" : ""
     },
 
     "TOTP" : {
@@ -33,9 +33,9 @@
 
     "USER_ATTRIBUTES" : {
         
-        "FIELD_HEADER_GUAC_TOTP_DISABLED"      : "禁用 TOTP：",
-        "FIELD_HEADER_GUAC_TOTP_KEY_GENERATED" : "已生成密钥：",
-        "FIELD_HEADER_GUAC_TOTP_KEY_CONFIRMED" : "已确认身份验证设备：",
+        "FIELD_HEADER_TBPAM_TOTP_DISABLED"      : "禁用 TOTP：",
+        "FIELD_HEADER_TBPAM_TOTP_KEY_GENERATED" : "已生成密钥：",
+        "FIELD_HEADER_TBPAM_TOTP_KEY_CONFIRMED" : "已确认身份验证设备：",
         
         "SECTION_HEADER_TOTP_ENROLLMENT_STATUS" : "TOTP 注册状态"
         
@@ -43,7 +43,7 @@
 
     "USER_GROUP_ATTRIBUTES" : {
         
-        "FIELD_HEADER_GUAC_TOTP_DISABLED" : "禁用 TOTP：",
+        "FIELD_HEADER_TBPAM_TOTP_DISABLED" : "禁用 TOTP：",
         
         "SECTION_HEADER_TOTP_USER_GROUP_CONFIG" : "TOTP 配置"
         

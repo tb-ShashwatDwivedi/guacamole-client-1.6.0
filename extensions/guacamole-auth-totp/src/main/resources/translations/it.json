@@ -1,7 +1,7 @@
 {
 
     "DATA_SOURCE_TOTP" : {
-        "NAME" : "TOTP TFA Backend"
+        "NAME" : "tbPAM TOTP MFA"
     },
 
     "TOTP" : {
@@ -26,14 +26,27 @@
         "SECTION_HEADER_DETAILS" : "Dettagli:"
 
     },
+
+    "LOGIN" : {
+        "FIELD_HEADER_TBPAM_TOTP" : ""
+    },
     
     "USER_ATTRIBUTES" : {
         
-        "FIELD_HEADER_GUAC_TOTP_KEY_GENERATED" : "Chiave segreta generata:",
-        "FIELD_HEADER_GUAC_TOTP_KEY_CONFIRMED" : "Dispositivo di autenticazione confermato:",
+        "FIELD_HEADER_TBPAM_TOTP_DISABLED"      : "Disabilita TOTP:",
+        "FIELD_HEADER_TBPAM_TOTP_KEY_GENERATED" : "Chiave segreta generata:",
+        "FIELD_HEADER_TBPAM_TOTP_KEY_CONFIRMED" : "Dispositivo di autenticazione confermato:",
         
         "SECTION_HEADER_TOTP_ENROLLMENT_STATUS" : "Stato di iscrizione TOTP"
         
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_TBPAM_TOTP_DISABLED" : "Disabilita TOTP:",
+
+        "SECTION_HEADER_TOTP_USER_GROUP_CONFIG" : "Configurazione TOTP"
+
     }
 
 }

@@ -17,7 +17,8 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.totp.user;
+
+package com.tbpam.auth.totp.user;
 
 import com.google.common.io.BaseEncoding;
 import com.google.inject.Inject;
@@ -33,9 +34,9 @@ import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
-import org.apache.guacamole.auth.totp.conf.ConfigurationService;
-import org.apache.guacamole.auth.totp.form.AuthenticationCodeField;
-import org.apache.guacamole.auth.totp.usergroup.TOTPUserGroup;
+import com.tbpam.auth.totp.conf.ConfigurationService;
+import com.tbpam.auth.totp.form.AuthenticationCodeField;
+import com.tbpam.auth.totp.usergroup.TOTPUserGroup;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.language.TranslatableGuacamoleClientException;
 import org.apache.guacamole.language.TranslatableGuacamoleInsufficientCredentialsException;
@@ -47,7 +48,7 @@ import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.UserGroup;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.properties.IPAddressListProperty;
-import org.apache.guacamole.totp.TOTPGenerator;
+import com.tbpam.totp.TOTPGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,7 +103,7 @@ public class UserVerificationService {
      *     or null if the extension storing the user does not support storage
      *     of the TOTP key.
      *
-     * @throws GuacamoleException
+     * @throws Exception
      *     If a new key is generated, but the extension storing the associated
      *     user fails while updating the user account.
      */
@@ -128,8 +129,7 @@ public class UserVerificationService {
         // If key is not valid base32, warn but otherwise pretend the key does
         // not exist
         catch (IllegalArgumentException e) {
-            logger.warn("TOTP key of user \"{}\" is not valid base32.", self.getIdentifier());
-            logger.debug("TOTP key is not valid base32.", e);
+            logger.warn("TOTP key of user \"{}\" is not valid base32.", self.getIdentifier(), e);
             return null;
         }
 
@@ -152,7 +152,7 @@ public class UserVerificationService {
      * @return
      *     The generated and set key, or null if the operation failed.
      * 
-     * @throws GuacamoleException
+     * @throws Exception
      *     If a new key is generated, but the extension storing the associated
      *     user fails while updating the user account, or if the configuration
      *     cannot be retrieved.
@@ -187,7 +187,7 @@ public class UserVerificationService {
      *     true if the TOTP key was successfully stored, false if the extension
      *     handling storage does not support storage of the key.
      *
-     * @throws GuacamoleException
+     * @throws Exception
      *     If the extension handling storage fails internally while attempting
      *     to update the user.
      */
@@ -218,9 +218,7 @@ public class UserVerificationService {
                     + "lack permission to update their own account and the "
                     + "TOTP extension was unable to obtain privileged access. "
                     + "TOTP will be disabled for this user.",
-                    self.getIdentifier());
-            logger.debug("Permission denied to set TOTP key of user "
-                    + "account.", e);
+                    self.getIdentifier(), e);
             return false;
         }
         catch (GuacamoleUnsupportedException e) {
@@ -249,7 +247,7 @@ public class UserVerificationService {
      *     True if TOTP access has been disabled for the user, otherwise
      *     false.
      * 
-     * @throws GuacamoleException
+     * @throws Exception
      *     If the extension handling storage fails internally while attempting
      *     to update the user.
      */
@@ -307,7 +305,7 @@ public class UserVerificationService {
      * @param authenticatedUser
      *     The user whose identity should be verified using TOTP.
      *
-     * @throws GuacamoleException
+     * @throws Exception
      *     If required TOTP-specific configuration options are missing or
      *     malformed, or if the user's identity cannot be verified.
      */
@@ -422,8 +420,7 @@ public class UserVerificationService {
 
         }
         catch (InvalidKeyException e) {
-            logger.warn("User \"{}\" is associated with an invalid TOTP key.", username);
-            logger.debug("TOTP key is not valid.", e);
+            logger.warn("User \"{}\" is associated with an invalid TOTP key.", username, e);
         }
 
         // Provided code is not valid

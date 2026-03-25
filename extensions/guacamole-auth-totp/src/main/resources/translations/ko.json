@@ -1,5 +1,13 @@
 {
 
+    "DATA_SOURCE_TOTP" : {
+        "NAME" : "tbPAM TOTP MFA"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_TBPAM_TOTP" : ""
+    },
+
     "TOTP" : {
 
         "ACTION_HIDE_DETAILS" : "숨기기",
@@ -25,12 +33,20 @@
 
     "USER_ATTRIBUTES" : {
 
-        "FIELD_HEADER_GUAC_TOTP_RESET"         : "TOTP 비밀 키 지우기:",
-        "FIELD_HEADER_GUAC_TOTP_KEY_CONFIRMED" : "TOTP 키 확인 완료:",
+        "FIELD_HEADER_TBPAM_TOTP_DISABLED"      : "TOTP 비활성화:",
+        "FIELD_HEADER_TBPAM_TOTP_KEY_GENERATED" : "비밀 키 생성됨:",
+        "FIELD_HEADER_TBPAM_TOTP_KEY_CONFIRMED" : "TOTP 키 확인 완료:",
 
-        "SECTION_HEADER_TOTP_CONFIG_FORM" : "TOTP 구성"
+        "SECTION_HEADER_TOTP_ENROLLMENT_STATUS" : "TOTP 등록 상태"
+
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_TBPAM_TOTP_DISABLED" : "TOTP 비활성화:",
+
+        "SECTION_HEADER_TOTP_USER_GROUP_CONFIG" : "TOTP 구성"
 
     }
-
 
 }

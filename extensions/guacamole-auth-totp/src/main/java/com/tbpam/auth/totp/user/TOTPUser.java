@@ -17,7 +17,8 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.totp.user;
+
+package com.tbpam.auth.totp.user;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,18 +38,18 @@ public class TOTPUser extends DelegatingUser {
      * The name of the user attribute which disables the TOTP requirement
      * for that specific user.
      */
-    public static final String TOTP_KEY_DISABLED_ATTRIBUTE_NAME = "guac-totp-disabled";
+    public static final String TOTP_KEY_DISABLED_ATTRIBUTE_NAME = "tbpam-totp-disabled";
     
     /**
      * The name of the user attribute which stores the TOTP key.
      */
-    public static final String TOTP_KEY_SECRET_ATTRIBUTE_NAME = "guac-totp-key-secret";
+    public static final String TOTP_KEY_SECRET_ATTRIBUTE_NAME = "tbpam-totp-key-secret";
 
     /**
      * The name of the user attribute defines whether the TOTP key has been
      * confirmed by the user, and the user is thus fully enrolled.
      */
-    public static final String TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME = "guac-totp-key-confirmed";
+    public static final String TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME = "tbpam-totp-key-confirmed";
     
     /**
      * The name of the user attribute defines whether the TOTP key has been
@@ -56,7 +57,7 @@ public class TOTPUser extends DelegatingUser {
      * confirmed. This attribute is not stored, but is instead exposed
      * dynamically in lieu of exposing the actual TOTP key.
      */
-    public static final String TOTP_KEY_SECRET_GENERATED_ATTRIBUTE_NAME = "guac-totp-key-generated";
+    public static final String TOTP_KEY_SECRET_GENERATED_ATTRIBUTE_NAME = "tbpam-totp-key-generated";
 
     /**
      * The string value used by TOTP user attributes to represent the boolean

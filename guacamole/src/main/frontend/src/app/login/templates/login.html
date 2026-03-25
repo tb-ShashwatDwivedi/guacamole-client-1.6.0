@@ -21,6 +21,12 @@
                 <p ng-show="helpText" translate="{{helpText.key}}"
                    translate-values="{{helpText.variables}}"></p>
 
+                <!-- After username/password accepted: show who is signing in (no re-entry) -->
+                <p class="login-continuation-summary"
+                   ng-show="isContinuation() && enteredValues.username"
+                   translate="LOGIN.INFO_CONTINUING_AS"
+                   translate-values="{ USERNAME : enteredValues.username }"></p>
+
                 <!-- Login fields -->
                 <div class="login-fields">
                     <guac-form

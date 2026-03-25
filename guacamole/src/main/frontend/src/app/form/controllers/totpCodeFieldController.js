@@ -18,7 +18,25 @@
  */
 
 /**
- * TOTP login field types (GUAC_TOTP_CODE / TBPAM_TOTP_CODE) are registered in
- * the core Guacamole webapp formService. This file remains so the extension
- * minified bundle structure is unchanged for existing deployments.
+ * Controller for TOTP MFA fields (GUAC_TOTP_CODE / TBPAM_TOTP_CODE).
  */
+angular.module('form').controller('totpCodeFieldController', ['$scope', '$window',
+        function totpCodeFieldController($scope, $window) {
+
+    $scope.groupedSecret = $scope.field.secret && $scope.field.secret.match(/.{1,4}/g);
+
+    $scope.detailsShown = false;
+
+    $scope.showDetails = function showDetails() {
+        $scope.detailsShown = true;
+    };
+
+    $scope.hideDetails = function hideDetails() {
+        $scope.detailsShown = false;
+    };
+
+    $scope.openKeyURI = function openKeyURI() {
+        $window.open($scope.field.keyUri);
+    };
+
+}]);

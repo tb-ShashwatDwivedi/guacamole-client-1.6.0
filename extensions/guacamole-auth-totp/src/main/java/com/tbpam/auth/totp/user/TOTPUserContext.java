@@ -17,13 +17,14 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.totp.user;
+
+package com.tbpam.auth.totp.user;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.totp.usergroup.TOTPUserGroup;
+import com.tbpam.auth.totp.usergroup.TOTPUserGroup;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.DecoratingDirectory;
 import org.apache.guacamole.net.auth.DelegatingUserContext;

@@ -177,7 +177,21 @@ angular.module('rest').factory('Field', [function defineField() {
          *
          * @type String
          */
-        TERMINAL_COLOR_SCHEME : 'TERMINAL_COLOR_SCHEME'
+        TERMINAL_COLOR_SCHEME : 'TERMINAL_COLOR_SCHEME',
+
+        /**
+         * TOTP MFA (Apache guacamole-auth-totp).
+         *
+         * @type String
+         */
+        GUAC_TOTP_CODE : 'GUAC_TOTP_CODE',
+
+        /**
+         * TOTP MFA (tbPAM extension naming).
+         *
+         * @type String
+         */
+        TBPAM_TOTP_CODE : 'TBPAM_TOTP_CODE'
 
     };
 

@@ -309,6 +309,8 @@
 
         "ERROR_INVALID_LOGIN" : "Invalid Login",
 
+        "INFO_CONTINUING_AS" : "Signing in as {{USERNAME}}. Enter the additional information below.",
+
         "FIELD_HEADER_USERNAME" : "Username",
         "FIELD_HEADER_PASSWORD" : "Password"
 

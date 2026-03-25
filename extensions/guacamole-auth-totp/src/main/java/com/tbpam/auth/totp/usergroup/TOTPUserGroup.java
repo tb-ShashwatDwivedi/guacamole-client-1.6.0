@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.guacamole.auth.totp.usergroup;
+
+package com.tbpam.auth.totp.usergroup;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,7 +39,7 @@ public class TOTPUserGroup extends DelegatingUserGroup {
      * for any users that are a member of that group, or are members of any
      * groups that are members of this group.
      */
-    public static final String TOTP_KEY_DISABLED_ATTRIBUTE_NAME = "guac-totp-disabled";
+    public static final String TOTP_KEY_DISABLED_ATTRIBUTE_NAME = "tbpam-totp-disabled";
     
     /**
      * The string value used by TOTP user attributes to represent the boolean

@@ -17,7 +17,8 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.totp.conf;
+
+package com.tbpam.auth.totp.conf;
 
 import com.google.inject.Inject;
 import inet.ipaddr.IPAddress;
@@ -30,7 +31,7 @@ import org.apache.guacamole.properties.EnumGuacamoleProperty;
 import org.apache.guacamole.properties.IPAddressListProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
-import org.apache.guacamole.totp.TOTPGenerator;
+import com.tbpam.totp.TOTPGenerator;
 
 /**
  * Service for retrieving configuration information regarding the TOTP
@@ -39,14 +40,14 @@ import org.apache.guacamole.totp.TOTPGenerator;
 public class ConfigurationService {
 
     /**
-     * The Guacamole server environment.
+     * The application server environment.
      */
     @Inject
     private Environment environment;
 
     /**
      * The human-readable name of the entity issuing user accounts. By default,
-     * this will be "Apache Guacamole".
+     * this will be "tbPAM".
      */
     private static final StringGuacamoleProperty TOTP_ISSUER =
             new StringGuacamoleProperty() {
@@ -125,17 +126,17 @@ public class ConfigurationService {
 
     /**
      * Returns the human-readable name of the entity issuing user accounts. If
-     * not specified, "Apache Guacamole" will be used by default.
+     * not specified, "tbPAM" will be used by default.
      *
      * @return
      *     The human-readable name of the entity issuing user accounts.
      *
-     * @throws GuacamoleException
-     *     If the "totp-issuer" property cannot be read from
-     *     guacamole.properties.
+     * @throws Exception
+     *     If the "totp-issuer" property cannot be read from the configuration
+     *     properties file.
      */
     public String getIssuer() throws GuacamoleException {
-        return environment.getProperty(TOTP_ISSUER, "Apache Guacamole");
+        return environment.getProperty(TOTP_ISSUER, "tbPAM");
     }
 
     /**
@@ -146,9 +147,9 @@ public class ConfigurationService {
      *     The number of digits which should be included in each generated
      *     TOTP code.
      *
-     * @throws GuacamoleException
-     *     If the "totp-digits" property cannot be read from
-     *     guacamole.properties.
+     * @throws Exception
+     *     If the "totp-digits" property cannot be read from the configuration
+     *     properties file.
      */
     public int getDigits() throws GuacamoleException {
 
@@ -170,9 +171,9 @@ public class ConfigurationService {
      *     The duration that each generated code should remain valid, in
      *     seconds.
      *
-     * @throws GuacamoleException
-     *     If the "totp-period" property cannot be read from
-     *     guacamole.properties.
+     * @throws Exception
+     *     If the "totp-period" property cannot be read from the configuration
+     *     properties file.
      */
     public int getPeriod() throws GuacamoleException {
         return environment.getProperty(TOTP_PERIOD, 30);
@@ -185,9 +186,9 @@ public class ConfigurationService {
      * @return
      *     The hash algorithm that should be used to generate TOTP codes.
      *
-     * @throws GuacamoleException
-     *     If the "totp-mode" property cannot be read from
-     *     guacamole.properties.
+     * @throws Exception
+     *     If the "totp-mode" property cannot be read from the configuration
+     *     properties file.
      */
     public TOTPGenerator.Mode getMode() throws GuacamoleException {
         return environment.getProperty(TOTP_MODE, TOTPGenerator.Mode.SHA1);
@@ -202,9 +203,9 @@ public class ConfigurationService {
      *     A list of IP addresses and/or subnets for which MFA authentication
      *     should be bypassed.
      * 
-     * @throws GuacamoleException 
-     *     If guacamole.properties cannot be parsed, or an invalid IP address
-     *     or subnet is specified.
+     * @throws Exception 
+     *     If the configuration properties file cannot be parsed, or an invalid
+     *     IP address or subnet is specified.
      */
     public List<IPAddress> getBypassHosts() throws GuacamoleException {
         return environment.getProperty(TOTP_BYPASS_HOSTS, Collections.emptyList());
@@ -219,9 +220,9 @@ public class ConfigurationService {
      *     A list of IP addresses and/or subnets for which MFA authentication
      *     should be explicitly enabled.
      * 
-     * @throws GuacamoleException 
-     *     If guacamole.properties cannot be parsed, or an invalid IP address
-     *     or subnet is specified.
+     * @throws Exception 
+     *     If the configuration properties file cannot be parsed, or an invalid
+     *     IP address or subnet is specified.
      */
     public List<IPAddress> getEnforceHosts() throws GuacamoleException {
         return environment.getProperty(TOTP_ENFORCE_HOSTS, Collections.emptyList());

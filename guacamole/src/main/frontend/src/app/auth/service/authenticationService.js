@@ -193,6 +193,11 @@ angular.module('auth').factory('authenticationService', ['$injector',
         // Notify that a fresh authentication request is underway
         $rootScope.$broadcast('guacLoginPending', parameters);
 
+        // Last form parameters actually sent to api/tokens (for MFA / continuation
+        // login). MUST NOT be the parameters Promise — listeners need the object
+        // (username, password, guac-totp, etc.) to merge into acceptedCredentials.
+        var submittedParamsForError = {};
+
         // Attempt authentication after auth parameters are available ...
         return parameters.then(function requestParametersReady(requestParams) {
 
@@ -202,6 +207,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
             // particularly problematic, as it is self-referential and explodes
             // the stack when fed to $.param().
             requestParams = _.omitBy(requestParams, (value, key) => key.startsWith('$'));
+            submittedParamsForError = requestParams;
 
             return requestService({
                 method: 'POST',
@@ -249,17 +255,17 @@ angular.module('auth').factory('authenticationService', ['$injector',
 
             // Notify of generic login failure, for any event consumers that
             // wish to handle all types of failures at once
-            $rootScope.$broadcast('guacLoginFailed', parameters, error);
+            $rootScope.$broadcast('guacLoginFailed', submittedParamsForError, error);
 
             // Request credentials if provided credentials were invalid
             if (error.type === Error.Type.INVALID_CREDENTIALS) {
-                $rootScope.$broadcast('guacInvalidCredentials', parameters, error);
+                $rootScope.$broadcast('guacInvalidCredentials', submittedParamsForError, error);
                 clearAuthenticationResult();
             }
 
             // Request more credentials if provided credentials were not enough 
             else if (error.type === Error.Type.INSUFFICIENT_CREDENTIALS) {
-                $rootScope.$broadcast('guacInsufficientCredentials', parameters, error);
+                $rootScope.$broadcast('guacInsufficientCredentials', submittedParamsForError, error);
                 clearAuthenticationResult();
             }
 

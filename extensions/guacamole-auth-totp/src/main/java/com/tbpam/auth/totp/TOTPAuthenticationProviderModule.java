@@ -17,13 +17,14 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.totp;
 
-import org.apache.guacamole.auth.totp.user.UserVerificationService;
+package com.tbpam.auth.totp;
+
+import com.tbpam.auth.totp.user.UserVerificationService;
 import com.google.inject.AbstractModule;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.totp.conf.ConfigurationService;
-import org.apache.guacamole.auth.totp.user.CodeUsageTrackingService;
+import com.tbpam.auth.totp.conf.ConfigurationService;
+import com.tbpam.auth.totp.user.CodeUsageTrackingService;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -34,7 +35,7 @@ import org.apache.guacamole.net.auth.AuthenticationProvider;
 public class TOTPAuthenticationProviderModule extends AbstractModule {
 
     /**
-     * Guacamole server environment.
+     * Application server environment.
      */
     private final Environment environment;
 
@@ -51,8 +52,8 @@ public class TOTPAuthenticationProviderModule extends AbstractModule {
      * @param authProvider
      *     The AuthenticationProvider for which injection is being configured.
      *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the Guacamole server
+     * @throws Exception
+     *     If an error occurs while retrieving the application server
      *     environment.
      */
     public TOTPAuthenticationProviderModule(AuthenticationProvider authProvider)
@@ -69,7 +70,7 @@ public class TOTPAuthenticationProviderModule extends AbstractModule {
     @Override
     protected void configure() {
 
-        // Bind core implementations of guacamole-ext classes
+        // Bind core implementations of extension API classes
         bind(AuthenticationProvider.class).toInstance(authProvider);
         bind(Environment.class).toInstance(environment);
 

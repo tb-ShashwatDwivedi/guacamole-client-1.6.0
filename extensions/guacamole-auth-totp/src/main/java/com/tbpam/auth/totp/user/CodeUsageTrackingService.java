@@ -17,7 +17,8 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.totp.user;
+
+package com.tbpam.auth.totp.user;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -29,7 +30,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.totp.conf.ConfigurationService;
+import com.tbpam.auth.totp.conf.ConfigurationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -212,10 +213,10 @@ public class CodeUsageTrackingService {
      *     true if the code has not previously been used by the given user and
      *     has now been marked as previously used, false otherwise.
      *
-     * @throws GuacamoleException
+     * @throws Exception
      *     If configuration information necessary to determine the length of
      *     time a code should be marked as invalid cannot be read from
-     *     guacamole.properties.
+     *     the configuration properties file.
      */
     public boolean useCode(String username, String code)
             throws GuacamoleException {

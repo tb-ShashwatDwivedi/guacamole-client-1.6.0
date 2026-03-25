@@ -17,7 +17,8 @@
  * under the License.
  */
 
-package org.apache.guacamole.totp;
+
+package com.tbpam.totp;
 
 import java.security.InvalidKeyException;
 import org.junit.Test;
