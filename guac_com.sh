@@ -12,7 +12,7 @@ git add .
 # Commit with backdated timestamp
 GIT_AUTHOR_DATE="$YESTERDAY $TZ_OFFSET" \
 GIT_COMMITTER_DATE="$YESTERDAY $TZ_OFFSET" \
-git commit -m "Backdated commit (yesterday 6:30 PM IST)"
+git commit -m "totp auth"
 
 # Show latest commit details
 git log -1 --pretty=fuller
