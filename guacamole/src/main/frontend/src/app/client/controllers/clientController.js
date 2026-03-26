@@ -71,13 +71,14 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     var MENU_DRAG_VERTICAL_TOLERANCE = 10;
 
     /**
-     * Keyboard shortcut to open/close the session panel: Ctrl+Alt.
-     * There are several possible keysyms for each modifier key.
+     * In order to open the guacamole menu, we need to hit ctrl-alt-shift. There are
+     * several possible keysysms for each key.
      */
-    var CTRL_KEYS = {0xFFE3 : true, 0xFFE4 : true},
-        ALT_KEYS  = {0xFFE9 : true, 0xFFEA : true, 0xFE03 : true,
-                     0xFFE7 : true, 0xFFE8 : true},
-        MENU_KEYS = angular.extend({}, CTRL_KEYS, ALT_KEYS);
+    var SHIFT_KEYS  = {0xFFE1 : true, 0xFFE2 : true},
+        ALT_KEYS    = {0xFFE9 : true, 0xFFEA : true, 0xFE03 : true,
+                       0xFFE7 : true, 0xFFE8 : true},
+        CTRL_KEYS   = {0xFFE3 : true, 0xFFE4 : true},
+        MENU_KEYS   = angular.extend({}, SHIFT_KEYS, ALT_KEYS, CTRL_KEYS);
 
     /**
      * Keysym for detecting any END key presses, for the purpose of passing through
@@ -378,8 +379,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      */
     $scope.sharingProfiles = {};
 
-    /*
-    *
+    /**
      * Map of all substituted key presses.  If one key is pressed in place of another
      * the value of the substituted key is stored in an object with the keysym of
      * the original key.
@@ -389,26 +389,28 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     var substituteKeysPressed = {};
 
     /**
-     * Returns whether the shortcut for showing/hiding the session panel
-     * (Ctrl+Alt) has been pressed.
+     * Returns whether the shortcut for showing/hiding the Guacamole menu
+     * (Ctrl+Alt+Shift) has been pressed.
      *
      * @param {Guacamole.Keyboard} keyboard
      *     The Guacamole.Keyboard object tracking the local keyboard state.
      *
      * @returns {boolean}
-     *     true if Ctrl+Alt has been pressed, false otherwise.
+     *     true if Ctrl+Alt+Shift has been pressed, false otherwise.
      */
     const isMenuShortcutPressed = function isMenuShortcutPressed(keyboard) {
 
-        // Ctrl+Alt has NOT been pressed if any key is currently held
-        // down that isn't Ctrl or Alt
+        // Ctrl+Alt+Shift has NOT been pressed if any key is currently held
+        // down that isn't Ctrl, Alt, or Shift
         if (_.findKey(keyboard.pressed, (val, keysym) => !MENU_KEYS[keysym]))
             return false;
 
-        // Verify that one Ctrl key and one Alt key are held
+        // Verify that one of each required key is held, regardless of
+        // left/right location on the keyboard
         return !!(
-                _.findKey(CTRL_KEYS, (val, keysym) => keyboard.pressed[keysym])
-             && _.findKey(ALT_KEYS,  (val, keysym) => keyboard.pressed[keysym])
+                _.findKey(SHIFT_KEYS, (val, keysym) => keyboard.pressed[keysym])
+             && _.findKey(ALT_KEYS,   (val, keysym) => keyboard.pressed[keysym])
+             && _.findKey(CTRL_KEYS,  (val, keysym) => keyboard.pressed[keysym])
         );
 
     };
@@ -452,7 +454,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     });
 
-    // Update client state/behavior as visibility of the session menu changes
+    // Update client state/behavior as visibility of the Guacamole menu changes
     $scope.$watch('menu.shown', function menuVisibilityChanged(menuShown, menuShownPreviousState) {
 
         // Re-update available connection parameters, if there is a focused
