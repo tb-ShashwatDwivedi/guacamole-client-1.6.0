@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -36,6 +37,16 @@ import javax.servlet.http.HttpSession;
  * be accessed even when outside the scope of the specific request represented.
  */
 public class RequestDetails {
+
+    /**
+     * Header used by reverse proxies to convey the original client IP.
+     */
+    private static final String X_FORWARDED_FOR_HEADER = "X-Forwarded-For";
+
+    /**
+     * Pattern for decimal port numbers.
+     */
+    private static final Pattern DECIMAL_PORT = Pattern.compile("^[0-9]+$");
 
     /**
      * The address of the client that sent the associated request.
@@ -175,6 +186,54 @@ public class RequestDetails {
     }
 
     /**
+     * Returns the most likely client address represented by the given request.
+     * If the "X-Forwarded-For" header is present, the first address in that
+     * header is preferred, otherwise request.getRemoteAddr() is used.
+     *
+     * @param request
+     *     The HTTP request to inspect.
+     *
+     * @return
+     *     The inferred client address.
+     */
+    private static String getRemoteAddress(HttpServletRequest request) {
+
+        String remoteAddress = request.getRemoteAddr();
+        String xForwardedFor = request.getHeader(X_FORWARDED_FOR_HEADER);
+
+        // Fall back to servlet-reported remote address if no proxy header exists
+        if (xForwardedFor == null || xForwardedFor.trim().isEmpty())
+            return remoteAddress;
+
+        // Per de-facto XFF conventions, the left-most entry is the original
+        // client address
+        String client = xForwardedFor.split(",")[0].trim();
+        if (client.isEmpty() || "unknown".equalsIgnoreCase(client))
+            return remoteAddress;
+
+        // Normalize bracketed IPv6 forms like "[2001:db8::1]:443"
+        if (client.startsWith("[")) {
+            int bracketEnd = client.indexOf(']');
+            if (bracketEnd > 0)
+                client = client.substring(1, bracketEnd);
+        }
+
+        // Normalize IPv4 "address:port" forms
+        else {
+            int colon = client.lastIndexOf(':');
+            if (colon > 0 && client.indexOf(':') == colon) {
+                String host = client.substring(0, colon);
+                String port = client.substring(colon + 1);
+                if (DECIMAL_PORT.matcher(port).matches())
+                    client = host;
+            }
+        }
+
+        return client;
+
+    }
+
+    /**
      * Creates a new RequestDetails that copies the details of the given HTTP
      * request. The provided request may safely go out of scope and be reused
      * for future requests without rendering the content of this RequestDetails
@@ -191,7 +250,7 @@ public class RequestDetails {
         this.cookies = getCookies(request);
         this.headers = getHeaders(request);
         this.parameters = getParameters(request);
-        this.remoteAddress = request.getRemoteAddr();
+        this.remoteAddress = getRemoteAddress(request);
         this.remoteHostname = request.getRemoteHost();
         this.session = request.getSession(false);
     }
