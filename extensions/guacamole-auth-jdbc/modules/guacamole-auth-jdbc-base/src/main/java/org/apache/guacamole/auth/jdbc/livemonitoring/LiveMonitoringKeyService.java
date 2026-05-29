@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.jdbc.livemonitoring;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import java.nio.ByteBuffer;
 import java.util.Calendar;
 import java.util.Collection;
@@ -93,6 +94,9 @@ public class LiveMonitoringKeyService {
     private SharingProfilePermissionMapper sharingProfilePermissionMapper;
 
     @Inject
+    private Provider<ModeledSharingProfile> sharingProfileProvider;
+
+    @Inject
     private JDBCEnvironment environment;
 
     @Inject
@@ -133,7 +137,9 @@ public class LiveMonitoringKeyService {
                         SharingProfileModel readOnlyProfile = getOrCreateReadOnlyProfile(
                                 connection, user);
                         SharedConnectionDefinition definition = connectionSharingService
-                                .shareConnection(user, activeConnection, readOnlyProfile.getIdentifier());
+                                .shareConnectionWithoutPermissionCheck(
+                                        activeConnection,
+                                        toModeledSharingProfile(user, readOnlyProfile));
                         insertRecord(sessionId, definition.getShareKey(),
                                 readOnlyProfile.getObjectID(), readOnlyProfile.getName(), now, expiresAt);
                     } catch (GuacamoleException e) {
@@ -156,10 +162,12 @@ public class LiveMonitoringKeyService {
                 for (SharingProfileModel profile : sharingProfiles) {
                     try {
                         SharedConnectionDefinition definition = connectionSharingService
-                                .shareConnection(user, activeConnection, profile.getIdentifier());
+                                .shareConnectionWithoutPermissionCheck(
+                                        activeConnection,
+                                        toModeledSharingProfile(user, profile));
                         insertRecord(sessionId, definition.getShareKey(),
                                 profile.getObjectID(), profile.getName(), now, expiresAt);
-                    } catch (GuacamoleException e) {
+                    } catch (RuntimeException e) {
                         logger.warn("Failed to generate share key for profile {}: {}",
                                 profile.getName(), e.getMessage());
                     }
@@ -181,6 +189,17 @@ public class LiveMonitoringKeyService {
             return (ModeledAuthenticatedUser) user;
         }
         return null;
+    }
+
+    /**
+     * Produces a modeled sharing profile from a resolved model without
+     * triggering additional permission lookups.
+     */
+    private ModeledSharingProfile toModeledSharingProfile(
+            ModeledAuthenticatedUser user, SharingProfileModel model) {
+        ModeledSharingProfile sharingProfile = sharingProfileProvider.get();
+        sharingProfile.init(user, model);
+        return sharingProfile;
     }
 
     /**

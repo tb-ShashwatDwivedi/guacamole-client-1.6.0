@@ -302,10 +302,21 @@ angular.module('auth').factory('authenticationService', ['$injector',
         // HTTP parameters for the authentication request
         var httpParameters = {};
 
-        // Add token parameter if current token is known
-        var token = service.getCurrentToken();
-        if (token)
-            httpParameters.token = service.getCurrentToken();
+        // Live monitoring / connection sharing: authenticate with share key
+        // only. Do not reuse a stored session token (would join wrong context).
+        var hasShareKey = parameters
+            && Object.prototype.hasOwnProperty.call(parameters, 'key')
+            && parameters.key !== null
+            && parameters.key !== undefined
+            && String(parameters.key).length > 0;
+
+        if (hasShareKey)
+            clearAuthenticationResult();
+        else {
+            var token = service.getCurrentToken();
+            if (token)
+                httpParameters.token = token;
+        }
 
         // Add any additional parameters
         if (parameters)

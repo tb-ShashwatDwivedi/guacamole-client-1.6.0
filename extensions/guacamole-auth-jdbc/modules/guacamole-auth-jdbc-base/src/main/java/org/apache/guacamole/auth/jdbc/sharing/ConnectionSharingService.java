@@ -127,6 +127,39 @@ public class ConnectionSharingService {
 
         }
 
+        return shareConnection(activeConnection, sharingProfile);
+
+    }
+
+    /**
+     * Creates a new SharedConnectionDefinition for internal callers that have
+     * already validated the provided sharing profile and do not require an
+     * additional permission lookup through SharingProfileService.
+     *
+     * @param activeConnection
+     *     The active connection being shared.
+     *
+     * @param sharingProfile
+     *     The sharing profile to apply, or null for unrestricted sharing.
+     *
+     * @return
+     *     A new SharedConnectionDefinition which can be used to connect to the
+     *     given connection.
+     */
+    public SharedConnectionDefinition shareConnectionWithoutPermissionCheck(
+            ActiveConnectionRecord activeConnection,
+            ModeledSharingProfile sharingProfile) {
+        return shareConnection(activeConnection, sharingProfile);
+    }
+
+    /**
+     * Generates a share key and registers sharing metadata for the provided
+     * active connection and resolved sharing profile.
+     */
+    private SharedConnectionDefinition shareConnection(
+            ActiveConnectionRecord activeConnection,
+            ModeledSharingProfile sharingProfile) {
+
         // Generate a share key for the requested connection
         String key = keyGenerator.getShareKey();
         SharedConnectionDefinition definition = new SharedConnectionDefinition(activeConnection, sharingProfile, key);
@@ -137,7 +170,6 @@ public class ConnectionSharingService {
         activeConnection.registerShareKey(key);
 
         return definition;
-
     }
 
     /**

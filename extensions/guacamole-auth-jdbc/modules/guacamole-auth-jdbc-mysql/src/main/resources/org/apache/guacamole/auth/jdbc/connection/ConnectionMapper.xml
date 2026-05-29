@@ -61,6 +61,7 @@
     <select id="selectIdentifiers" resultType="string">
         SELECT connection_id 
         FROM guacamole_connection
+        ORDER BY connection_id DESC
     </select>
 
     <!--
@@ -96,6 +97,7 @@
             <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
             <property name="groups"   value="effectiveGroups"/>
         </include>
+        ORDER BY connection_id DESC
     </select>
 
     <!-- Select all connection identifiers within a particular connection group -->
@@ -146,7 +148,8 @@
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=VARCHAR}
             </foreach>
-        GROUP BY guacamole_connection.connection_id;
+        GROUP BY guacamole_connection.connection_id
+        ORDER BY guacamole_connection.connection_id DESC;
 
         SELECT primary_connection_id, sharing_profile_id
         FROM guacamole_sharing_profile
@@ -200,7 +203,8 @@
                     <property name="caseSensitivity" value="${caseSensitivity}"/>
                 </include>
             )
-        GROUP BY guacamole_connection.connection_id;
+        GROUP BY guacamole_connection.connection_id
+        ORDER BY guacamole_connection.connection_id DESC;
 
         SELECT primary_connection_id, guacamole_sharing_profile.sharing_profile_id
         FROM guacamole_sharing_profile

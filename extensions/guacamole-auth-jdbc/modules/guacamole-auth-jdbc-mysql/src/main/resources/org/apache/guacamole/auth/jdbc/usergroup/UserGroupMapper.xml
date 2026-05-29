@@ -44,9 +44,11 @@
 
     <!-- Select all group names -->
     <select id="selectIdentifiers" resultType="string">
-        SELECT name
-        FROM guacamole_entity
+        SELECT guacamole_entity.name
+        FROM guacamole_user_group
+        JOIN guacamole_entity ON guacamole_user_group.entity_id = guacamole_entity.entity_id
         WHERE guacamole_entity.type = 'USER_GROUP'
+        ORDER BY guacamole_user_group.user_group_id DESC
     </select>
 
     <!--
@@ -90,6 +92,7 @@
                 </include>
             )
             AND guacamole_entity.type = 'USER_GROUP'
+        ORDER BY guacamole_user_group.user_group_id DESC
     </select>
 
     <!-- Select multiple groups by name -->
@@ -126,6 +129,7 @@
                     </otherwise>
                 </choose>
             </foreach>
+        ORDER BY guacamole_user_group.user_group_id DESC
             ;
 
         SELECT
@@ -202,7 +206,8 @@
                     <property name="groups"          value="effectiveGroups"/>
                     <property name="caseSensitivity" value="${caseSensitivity}"/>
                 </include>
-            );
+            )
+        ORDER BY guacamole_user_group.user_group_id DESC;
 
         SELECT
             guacamole_user_group_attribute.user_group_id,

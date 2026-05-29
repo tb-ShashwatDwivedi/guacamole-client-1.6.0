@@ -58,9 +58,11 @@
 
     <!-- Select all usernames -->
     <select id="selectIdentifiers" resultType="string">
-        SELECT name
-        FROM guacamole_entity
+        SELECT guacamole_entity.name
+        FROM guacamole_user
+        JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
         WHERE guacamole_entity.type = 'USER'::guacamole_entity_type
+        ORDER BY guacamole_user.user_id DESC
     </select>
 
     <!--
@@ -103,6 +105,7 @@
                     <property name="caseSensitivity" value="${caseSensitivity}"/>
                 </include>
             )
+        ORDER BY guacamole_user.user_id DESC
     </select>
 
     <!-- Select multiple users by username -->
@@ -153,7 +156,8 @@
                     </otherwise>
                 </choose>
             </foreach>    
-        GROUP BY guacamole_user.user_id, guacamole_entity.entity_id;
+        GROUP BY guacamole_user.user_id, guacamole_entity.entity_id
+        ORDER BY guacamole_user.user_id DESC;
 
         SELECT
             guacamole_user_attribute.user_id,
@@ -243,7 +247,8 @@
                     <property name="caseSensitivity" value="${caseSensitivity}"/>
                 </include>
             )
-        GROUP BY guacamole_user.user_id, guacamole_entity.entity_id;
+        GROUP BY guacamole_user.user_id, guacamole_entity.entity_id
+        ORDER BY guacamole_user.user_id DESC;
 
         SELECT
             guacamole_user_attribute.user_id,

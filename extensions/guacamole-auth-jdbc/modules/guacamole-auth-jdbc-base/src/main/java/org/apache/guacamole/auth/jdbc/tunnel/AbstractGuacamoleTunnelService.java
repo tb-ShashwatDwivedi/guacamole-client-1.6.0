@@ -302,6 +302,10 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         config.setProtocol(model.getProtocol());
         config.setConnectionID(connectionID);
 
+        String assetId = connection.getIdentifier();
+        if (assetId != null)
+            config.setParameter("asset-id", assetId);
+
         // Set parameters from associated data
         if (sharingProfile != null) {
             Collection<SharingProfileParameterModel> parameters = sharingProfileParameterMapper.select(sharingProfile.getIdentifier());
