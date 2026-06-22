@@ -121,8 +121,15 @@ angular.module('auth').factory('authenticationService', ['$injector',
      * @param {AuthenticationResult} data
      *     The last successful authentication result, or null if the last
      *     authentication attempt failed.
+     *
+     * @param {Boolean} [skipPersist]
+     *     If true, the auth token is NOT written to localStorage even for
+     *     non-anonymous users. The in-memory cachedResult is still updated so
+     *     the current window session continues to function. Pass true for
+     *     key-based (live monitoring) sessions to prevent the monitoring token
+     *     from overwriting the admin token in shared localStorage.
      */
-    var setAuthenticationResult = function setAuthenticationResult(data) {
+    var setAuthenticationResult = function setAuthenticationResult(data, skipPersist) {
 
         // Clear the currently-stored result and auth token if the last
         // attempt failed
@@ -141,9 +148,11 @@ angular.module('auth').factory('authenticationService', ['$injector',
             // Always store in cache
             cachedResult = data;
 
-            // Persist only the auth token past tab/window closure, and only
-            // if not anonymous
-            if (data.username !== AuthenticationResult.ANONYMOUS_USERNAME)
+            // Persist only the auth token past tab/window closure, only if
+            // not anonymous, and only if not explicitly suppressed. Key-based
+            // (monitoring) sessions must never overwrite the admin session token
+            // stored in shared localStorage.
+            if (!skipPersist && data.username !== AuthenticationResult.ANONYMOUS_USERNAME)
                 localStorageService.setItem(
                         AUTH_TOKEN_STORAGE_KEY, data.authToken);
 
@@ -221,19 +230,26 @@ angular.module('auth').factory('authenticationService', ['$injector',
             // ... if authentication succeeds, handle received auth data ...
             .then(function authenticationSuccessful(data) {
 
+                // Key-based (live monitoring) sessions must not revoke the
+                // existing admin server session and must not overwrite the admin
+                // token in shared localStorage.
+                var isKeySession = !!(submittedParamsForError && submittedParamsForError.key);
+
                 var currentToken = service.getCurrentToken();
 
                 // If a new token was received, ensure the old token is invalidated,
                 // if any, and notify listeners of the new token
                 if (data.authToken !== currentToken) {
 
-                    // If an old token existed, request that the token be revoked
-                    if (currentToken) {
+                    // Revoke the old token only for non-key flows. For key-based
+                    // flows the current token belongs to the admin session open in
+                    // another tab and must not be revoked by this popup.
+                    if (currentToken && !isKeySession) {
                         service.revokeToken(currentToken).catch(angular.noop);
                     }
 
                     // Notify of login and new token
-                    setAuthenticationResult(new AuthenticationResult(data));
+                    setAuthenticationResult(new AuthenticationResult(data), isKeySession);
                     $rootScope.$broadcast('guacLogin', data.authToken);
 
                 }
@@ -241,7 +257,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
                 // Update cached authentication result, even if the token remains
                 // the same
                 else
-                    setAuthenticationResult(new AuthenticationResult(data));
+                    setAuthenticationResult(new AuthenticationResult(data), isKeySession);
 
                 // Authentication was successful
                 return data;
@@ -257,16 +273,24 @@ angular.module('auth').factory('authenticationService', ['$injector',
             // wish to handle all types of failures at once
             $rootScope.$broadcast('guacLoginFailed', submittedParamsForError, error);
 
+            // Key-based (live monitoring) auth failures must NOT clear
+            // localStorage. The monitoring popup has no stored session of its
+            // own to clean up, and clearing would silently destroy the admin
+            // token shared with same-origin tabs still open in the admin UI.
+            var isKeySession = !!(submittedParamsForError && submittedParamsForError.key);
+
             // Request credentials if provided credentials were invalid
             if (error.type === Error.Type.INVALID_CREDENTIALS) {
                 $rootScope.$broadcast('guacInvalidCredentials', submittedParamsForError, error);
-                clearAuthenticationResult();
+                if (!isKeySession)
+                    clearAuthenticationResult();
             }
 
             // Request more credentials if provided credentials were not enough 
             else if (error.type === Error.Type.INSUFFICIENT_CREDENTIALS) {
                 $rootScope.$broadcast('guacInsufficientCredentials', submittedParamsForError, error);
-                clearAuthenticationResult();
+                if (!isKeySession)
+                    clearAuthenticationResult();
             }
 
             // Abort rendering of page if an internal error occurs
@@ -302,17 +326,20 @@ angular.module('auth').factory('authenticationService', ['$injector',
         // HTTP parameters for the authentication request
         var httpParameters = {};
 
-        // Live monitoring / connection sharing: authenticate with share key
-        // only. Do not reuse a stored session token (would join wrong context).
+        // Detect a live monitoring / connection sharing request by the presence
+        // of a non-empty 'key' parameter. When a share key is present:
+        //   - Do NOT inject the stored admin token; sending both would cause
+        //     Guacamole to re-authenticate the full admin session and redirect
+        //     to the home screen instead of opening the monitored connection.
+        //   - Do NOT call clearAuthenticationResult() here; the admin session
+        //     token must survive in shared localStorage for other same-origin tabs.
         var hasShareKey = parameters
             && Object.prototype.hasOwnProperty.call(parameters, 'key')
             && parameters.key !== null
             && parameters.key !== undefined
             && String(parameters.key).length > 0;
 
-        if (hasShareKey)
-            clearAuthenticationResult();
-        else {
+        if (!hasShareKey) {
             var token = service.getCurrentToken();
             if (token)
                 httpParameters.token = token;

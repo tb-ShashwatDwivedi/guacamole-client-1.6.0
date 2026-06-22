@@ -3,3 +3,4 @@ CONTRIBUTING
 doc/licenses/*/**/*
 doc/**/html/*.html
 guacamole-docker/*.pref
+META-INF/MANIFEST.MF
