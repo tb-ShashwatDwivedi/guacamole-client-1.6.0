@@ -18,9 +18,25 @@
         <!-- Extension CSS (must be able to override webapp CSS) -->
         <link rel="stylesheet" type="text/css" href="app.css?b=${guacamole.build.identifier}">
 
-        <title ng-bind="page.title | translate"></title>
+        <title ng-bind="applicationState === 'sessionEnded' ? page.title : (page.title | translate)"></title>
     </head>
     <body ng-cloak translate-cloak ng-class="page.bodyClassName" ng-switch="applicationState">
+
+        <!-- Cybersio/tbPAM session ended (token revoke / logout / expiry) -->
+        <div class="cybersio-session-ended" ng-switch-when="sessionEnded">
+            <div class="cybersio-session-ended-panel">
+                <div class="cybersio-session-ended-brand">Cybersio</div>
+                <h1 class="cybersio-session-ended-title">Session ended</h1>
+                <p class="cybersio-session-ended-text">
+                    Your session has ended or you have been signed out.
+                    Return to the Cybersio dashboard.
+                </p>
+                <p class="cybersio-session-ended-actions">
+                    <button type="button" class="cybersio-session-ended-close"
+                            ng-click="closeSessionEndedWindow()">Close</button>
+                </p>
+            </div>
+        </div>
 
         <!-- Manually logged-out -->
         <div class="logged-out-modal" ng-switch-when="loggedOut">

@@ -51,9 +51,11 @@ angular.module('client').directive('guacClientNotification', [function guacClien
 
         // Required services
         const $location              = $injector.get('$location');
+        const $rootScope             = $injector.get('$rootScope');
         const authenticationService  = $injector.get('authenticationService');
         const guacClientManager      = $injector.get('guacClientManager');
         const guacTranslate          = $injector.get('guacTranslate');
+        const pamModeService         = $injector.get('pamModeService');
         const requestService         = $injector.get('requestService');
         const userPageService        = $injector.get('userPageService');
 
@@ -151,6 +153,16 @@ angular.module('client').directive('guacClientNotification', [function guacClien
         };
 
         /**
+         * Ends a PAM-launched connection with the Cybersio session-ended
+         * interstitial instead of Guacamole Home / Reconnect / Logout UI.
+         */
+        const endPamSession = function endPamSession() {
+            $scope.status = false;
+            pamModeService.enablePamMode();
+            $rootScope.$broadcast('guacPamSessionEnded');
+        };
+
+        /**
          * Displays a notification at the end of a Guacamole connection, whether
          * that connection is ending normally or due to an error. As the end of
          * a Guacamole connection may be due to changes in authentication status,
@@ -158,11 +170,23 @@ angular.module('client').directive('guacClientNotification', [function guacClien
          * for such changes, possibly resulting in auth-related events like
          * guacInvalidCredentials.
          *
+         * In PAM mode, never surface Guacamole home/login actions — show the
+         * Cybersio session-ended screen instead.
+         *
          * @param {Notification|Boolean|Object} status
          *     The status notification to show, as would be accepted by
          *     guacNotification.showStatus().
          */
         const notifyConnectionClosed = function notifyConnectionClosed(status) {
+
+            // PAM-launched clients: skip Guacamole disconnect dialog entirely
+            if (pamModeService.isPamMode()) {
+                endPamSession();
+                // Still poke auth so guacInvalidCredentials / logout paths run
+                authenticationService.updateCurrentToken($location.search())
+                ['catch'](requestService.IGNORE);
+                return;
+            }
 
             // Re-authenticate to verify auth status at end of connection
             authenticationService.updateCurrentToken($location.search())

@@ -1,0 +1,90 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+/**
+ * Cybersio-branded interstitial shown when a PAM-launched Guacamole session
+ * ends. Intentionally contains no Apache Guacamole naming or chrome.
+ */
+
+.cybersio-session-ended {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, #0f172a 0%, #1e293b 55%, #0b1220 100%);
+    color: #e2e8f0;
+    font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.cybersio-session-ended-panel {
+    max-width: 26rem;
+    width: calc(100% - 2.5rem);
+    padding: 2rem 1.75rem;
+    text-align: center;
+}
+
+.cybersio-session-ended-brand {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #38bdf8;
+    margin-bottom: 1.25rem;
+}
+
+.cybersio-session-ended-title {
+    margin: 0 0 0.75rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #f8fafc;
+}
+
+.cybersio-session-ended-text {
+    margin: 0 0 1.5rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #cbd5e1;
+}
+
+.cybersio-session-ended-actions {
+    margin: 0;
+}
+
+.cybersio-session-ended-close {
+    appearance: none;
+    border: 1px solid #64748b;
+    background: transparent;
+    color: #f8fafc;
+    border-radius: 0.375rem;
+    padding: 0.55rem 1.25rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.cybersio-session-ended-close:hover,
+.cybersio-session-ended-close:focus {
+    border-color: #94a3b8;
+    background: rgba(148, 163, 184, 0.12);
+    outline: none;
+}
+
+body.session-ended {
+    background: #0f172a;
+}

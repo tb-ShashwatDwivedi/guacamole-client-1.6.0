@@ -48,6 +48,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     const clipboardService       = $injector.get('clipboardService');
     const guacNotification       = $injector.get('guacNotification');
     const guacClientManager      = $injector.get('guacClientManager');
+    const pamModeService         = $injector.get('pamModeService');
 
     /**
      * The error that prevents the current page from rendering at all. If no
@@ -142,7 +143,14 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         /**
          * The application has fully loaded and the user has logged in
          */
-        READY : 'ready'
+        READY : 'ready',
+
+        /**
+         * A Cybersio/tbPAM-launched session has ended (token revoked, expired,
+         * or dashboard logout). Shows a branded interstitial instead of
+         * Guacamole login or home.
+         */
+        SESSION_ENDED : 'sessionEnded'
 
     };
 
@@ -174,6 +182,10 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         bodyClassName: ''
 
     };
+
+    // Detect PAM mode as early as possible so subsequent auth failures never
+    // fall through to Guacamole login/home.
+    pamModeService.isPamMode();
 
     // Add default destination for input events
     var sink = new Guacamole.InputSink();
@@ -250,6 +262,63 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
 
     };
 
+    /**
+     * Replaces Guacamole login/home UI with the Cybersio session-ended
+     * interstitial. The tab stays open; no auto-close.
+     */
+    const enterSessionEnded = function enterSessionEnded() {
+
+        pamModeService.enablePamMode();
+        $scope.applicationState = ApplicationState.SESSION_ENDED;
+        $scope.reAuthenticating = false;
+        $scope.fatalError = null;
+        $scope.loginHelpText = null;
+        $scope.acceptedCredentials = null;
+        $scope.expectedCredentials = null;
+        $scope.page.title = 'Session ended';
+        $scope.page.bodyClassName = 'session-ended';
+
+        // Clear any Guacamole status dialog that may have been showing
+        try {
+            guacNotification.showStatus(false);
+        }
+        catch (e) {
+            // Ignore if notification service is unavailable
+        }
+
+    };
+
+    /**
+     * Optional Close control for the session-ended screen. Never called
+     * automatically — only when the user clicks Close.
+     */
+    $scope.closeSessionEndedWindow = function closeSessionEndedWindow() {
+
+        try {
+            if ($window.parent && $window.parent !== $window) {
+                $window.parent.postMessage({ type: 'cybersio-pam-close' }, '*');
+            }
+        }
+        catch (e) {
+            // Cross-origin parent access may throw; ignore
+        }
+
+        $window.close();
+
+    };
+
+    /**
+     * Applies enterSessionEnded() safely from non-Angular callbacks.
+     */
+    const enterSessionEndedSafe = function enterSessionEndedSafe() {
+        if ($scope.applicationState === ApplicationState.SESSION_ENDED)
+            return;
+        if ($scope.$root && !$scope.$root.$$phase)
+            $scope.$apply(enterSessionEnded);
+        else
+            enterSessionEnded();
+    };
+
     // If we're logged in and not connected to anything, periodically check
     // whether the current session is still valid. If the session has expired,
     // refresh the auth state to reshow the login screen (rather than wait for
@@ -260,8 +329,12 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     $interval(function cleanUpViewIfSessionInvalid() {
         if (!!authenticationService.getCurrentToken() && !hasActiveTunnel()) {
             authenticationService.getValidity().then(function validityDetermined(valid) {
-                if (!valid)
-                    $scope.reAuthenticate();
+                if (!valid) {
+                    if (pamModeService.isPamMode())
+                        enterSessionEnded();
+                    else
+                        $scope.reAuthenticate();
+                }
             });
         }
     }, SESSION_VALIDITY_RECHECK_INTERVAL);
@@ -284,6 +357,28 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
 
     }, true);
 
+    // Defense-in-depth: Cybersio dashboard logout can signal open Guac tabs
+    try {
+        if (typeof $window.BroadcastChannel === 'function') {
+            const logoutChannel = new $window.BroadcastChannel(pamModeService.LOGOUT_CHANNEL);
+            logoutChannel.onmessage = function onPamLogoutMessage(event) {
+                const data = event && event.data;
+                if (data && (data.type === 'logout' || data.type === 'session-ended')
+                        && pamModeService.isPamMode()) {
+                    enterSessionEndedSafe();
+                }
+            };
+        }
+    }
+    catch (e) {
+        // BroadcastChannel unsupported or blocked
+    }
+
+    $window.addEventListener('storage', function onPamLogoutStorage(event) {
+        if (event.key === pamModeService.LOGOUT_STORAGE_KEY && pamModeService.isPamMode())
+            enterSessionEndedSafe();
+    });
+
     /**
      * Sets the current overall state of the client side of the
      * application to the given value. Possible values are defined by
@@ -305,8 +400,16 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
      * current route and controller if the user is already there), effectively
      * forcing reauthentication. If the user is not logged in, this will result
      * in the login screen appearing.
+     *
+     * In PAM mode, never navigate to Guacamole home — show the Cybersio
+     * session-ended interstitial instead.
      */
     $scope.reAuthenticate = function reAuthenticate() {
+
+        if (pamModeService.isPamMode()) {
+            enterSessionEnded();
+            return;
+        }
 
         $scope.reAuthenticating = true;
 
@@ -322,6 +425,11 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     // Display login screen if a whole new set of credentials is needed
     $scope.$on('guacInvalidCredentials', function loginInvalid(event, parameters, error) {
 
+        if (pamModeService.isPamMode()) {
+            enterSessionEnded();
+            return;
+        }
+
         setApplicationState(ApplicationState.AWAITING_CREDENTIALS);
 
         $scope.loginHelpText = null;
@@ -332,6 +440,11 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
 
     // Prompt for remaining credentials if provided credentials were not enough
     $scope.$on('guacInsufficientCredentials', function loginInsufficient(event, parameters, error) {
+
+        if (pamModeService.isPamMode()) {
+            enterSessionEnded();
+            return;
+        }
 
         setApplicationState(ApplicationState.AWAITING_CREDENTIALS);
 
@@ -344,6 +457,11 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     // Alert user to authentication errors that occur in the absence of an
     // interactive login form
     $scope.$on('guacLoginFailed', function loginFailed(event, parameters, error) {
+
+        if (pamModeService.isPamMode()) {
+            enterSessionEnded();
+            return;
+        }
 
         // All errors related to an interactive login form are handled elsewhere
         if ($scope.applicationState === ApplicationState.AWAITING_CREDENTIALS
@@ -367,17 +485,39 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     // Replace the overall user interface with an informational message if the
     // user has manually logged out
     $scope.$on('guacLogout', function loggedOut() {
+        if (pamModeService.isPamMode()) {
+            enterSessionEnded();
+            return;
+        }
         $scope.applicationState = ApplicationState.LOGGED_OUT;
         $scope.reAuthenticating = false;
     });
 
+    // Client disconnect / auth loss while in PAM mode (from guacClientNotification)
+    $scope.$on('guacPamSessionEnded', function pamSessionEnded() {
+        enterSessionEnded();
+    });
+
     // Ensure new pages always start with clear keyboard state
-    $scope.$on('$routeChangeStart', function routeChanging() {
+    $scope.$on('$routeChangeStart', function routeChanging(event) {
         keyboard.reset();
+
+        // Keep session-ended screen sticky; never allow navigation to flip
+        // back to Guacamole home/login UI in PAM mode after session end.
+        if ($scope.applicationState === ApplicationState.SESSION_ENDED) {
+            event.preventDefault();
+        }
     });
 
     // Update title and CSS class upon navigation
     $scope.$on('$routeChangeSuccess', function(event, current, previous) {
+
+        // Never overwrite the Cybersio session-ended interstitial
+        if ($scope.applicationState === ApplicationState.SESSION_ENDED)
+            return;
+
+        // Detect PAM markers that appear after route resolution (e.g. /client/)
+        pamModeService.isPamMode();
        
         // If the current route is available
         if (current.$$route) {

@@ -105,6 +105,9 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
         })
 
         ['catch'](function tokenUpdateFailed() {
+            // Auth failures broadcast guacInvalidCredentials; in PAM mode
+            // indexController maps that to the Cybersio session-ended screen
+            // instead of Guacamole login/home.
             route.reject();
         });
 
