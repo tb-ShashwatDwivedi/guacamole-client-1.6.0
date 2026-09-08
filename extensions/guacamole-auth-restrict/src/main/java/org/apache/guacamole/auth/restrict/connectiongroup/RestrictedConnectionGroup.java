@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.restrict.Restrictable;
 import org.apache.guacamole.auth.restrict.RestrictionVerificationService;
+import org.apache.guacamole.auth.restrict.TimeRestrictedGuacamoleTunnel;
 import org.apache.guacamole.auth.restrict.form.HostRestrictionField;
 import org.apache.guacamole.auth.restrict.form.TimeRestrictionField;
 import org.apache.guacamole.calendar.RestrictionType;
@@ -180,8 +181,9 @@ public class RestrictedConnectionGroup extends DelegatingConnectionGroup impleme
         // Verify restrictions for this connection group.
         RestrictionVerificationService.verifyConnectionRestrictions(this, remoteAddress);
         
-        // Connect
-        return super.connect(info, tokens);
+        // Connect and continuously enforce restrictions while active.
+        GuacamoleTunnel tunnel = super.connect(info, tokens);
+        return new TimeRestrictedGuacamoleTunnel(tunnel, this, remoteAddress);
         
     }
     

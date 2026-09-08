@@ -91,6 +91,7 @@
         "ERROR_CLIENT_209"     : "The remote desktop server has closed the connection because it conflicts with another connection. Please try again later.",
         "ERROR_CLIENT_20A"     : "The remote desktop server has closed the connection because it appeared to be inactive. If this is undesired or unexpected, please notify your system administrator, or check your system settings.",
         "ERROR_CLIENT_20B"     : "The remote desktop server has forcibly closed the connection. If this is undesired or unexpected, please notify your system administrator, or check your system logs.",
+        "ERROR_CLIENT_20C"     : "Your access window for this connection has expired. Reconnect during an allowed time window.",
         "ERROR_CLIENT_301"     : "Log in failed. Please reconnect and try again.",
         "ERROR_CLIENT_303"     : "The remote desktop server has denied access to this connection. If you require access, please ask your system administrator to grant your account access, or check your system settings.",
         "ERROR_CLIENT_308"     : "The remote server has closed the connection because there has been no response from your browser for long enough that it appeared to be disconnected. This is commonly caused by network problems, such as spotty wireless signal, or simply very slow network speeds. Please check your network and try again.",
