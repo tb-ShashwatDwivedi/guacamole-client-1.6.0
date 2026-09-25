@@ -1,0 +1,193 @@
+
+<guac-viewport>
+
+    <!-- Client view -->
+    <div class="client-view">
+        <div class="client-view-content">
+
+            <!-- Central portion of view -->
+            <div class="client-body" guac-touch-drag="menuDrag">
+                <guac-tiled-clients
+                    on-close="closeClientTile($client)"
+                    client-group="clientGroup"
+                    emulate-absolute-mouse="menu.emulateAbsoluteMouse">
+                </guac-tiled-clients>
+            </div>
+
+            <!-- Bottom portion of view -->
+            <div class="client-bottom">
+                <div class="text-input-container" ng-if="showTextInput">
+                    <guac-text-input></guac-text-input>
+                </div>
+                <div class="keyboard-container" ng-if="showOSK">
+                    <guac-osk layout="'CLIENT.URL_OSK_LAYOUT' | translate"></guac-osk>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- File transfers -->
+    <div id="file-transfer-dialog" ng-show="hasTransfers()">
+        <guac-file-transfer-manager client-group="clientGroup"></guac-file-transfer-manager>
+    </div>
+
+    <!-- Connection stability warning -->
+    <div id="connection-warning" ng-show="isConnectionUnstable()">
+        {{'CLIENT.TEXT_CLIENT_STATUS_UNSTABLE' | translate}}
+    </div>
+
+    <!-- ─── Persistent SFTP toolbar button ──────────────────────────────── -->
+    <div class="sra-sftp-fab"
+         ng-if="focusedClient.filesystems.length"
+         ng-click="openFirstFilesystem()"
+         title="Open File System">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span class="sra-sftp-fab-label">Files</span>
+    </div>
+
+    <!-- ─── Session Panel (Ctrl+Alt) ────────────────────────────────────── -->
+    <div class="menu sra-panel" ng-class="{open: menu.shown}" id="guac-menu">
+        <div class="menu-content sra-panel-content" ng-if="menu.shown" guac-touch-drag="menuDrag">
+
+            <!-- Panel header -->
+            <div class="header sra-panel-header">
+                <div class="sra-panel-header-left">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                    <span class="sra-panel-conn-name" ng-hide="rootConnectionGroups">{{ getName(clientGroup) }}</span>
+                    <span class="sra-panel-conn-name" ng-show="rootConnectionGroups">
+                        <guac-menu menu-title="getName(clientGroup)" interactive="true">
+                            <div class="all-connections">
+                                <guac-group-list-filter connection-groups="rootConnectionGroups"
+                                    filtered-connection-groups="filteredRootConnectionGroups"
+                                    placeholder="'CLIENT.FIELD_PLACEHOLDER_FILTER' | translate"
+                                    connection-properties="filteredConnectionProperties"
+                                    connection-group-properties="filteredConnectionGroupProperties"></guac-group-list-filter>
+                                <guac-group-list
+                                    connection-groups="filteredRootConnectionGroups"
+                                    context="connectionListContext"
+                                    templates="{
+                                        'connection'       : 'app/client/templates/connection.html',
+                                        'connection-group' : 'app/client/templates/connectionGroup.html'
+                                    }"
+                                    page-size="10"></guac-group-list>
+                            </div>
+                        </guac-menu>
+                    </span>
+                </div>
+                <button class="sra-panel-close-btn" ng-click="menu.shown = false" title="Close panel">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+
+            <!-- Panel body: only Clipboard + File System -->
+            <div class="menu-body sra-panel-body" guac-touch-drag="visibleMenuDrag" guac-scroll="menu.scrollState">
+
+                <!-- ── Clipboard ──────────────────────────────────────── -->
+                <div class="sra-panel-section" id="clipboard-settings">
+                    <div class="sra-section-header">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                        </svg>
+                        <span>Clipboard</span>
+                    </div>
+                    <div class="sra-section-body">
+                        <guac-clipboard></guac-clipboard>
+                    </div>
+                </div>
+
+                <!-- ── File System ─────────────────────────────────────── -->
+                <div class="sra-panel-section" id="devices" ng-if="focusedClient.filesystems.length">
+                    <div class="sra-section-header">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span>File System</span>
+                    </div>
+                    <div class="sra-section-body">
+                        <div class="sra-drive-btn"
+                             ng-repeat="filesystem in focusedClient.filesystems"
+                             ng-click="showFilesystemMenu(filesystem)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                            </svg>
+                            <span>{{filesystem.name}}</span>
+                            <svg class="sra-drive-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ─── SFTP File System Panel ────────────────────────────────────────── -->
+    <div id="filesystem-menu" class="menu sra-panel" ng-class="{open: isFilesystemMenuShown()}">
+        <div class="menu-content sra-panel-content">
+
+            <!-- Header -->
+            <div class="header sra-panel-header sra-fs-header">
+                <div class="sra-panel-header-left">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <span class="sra-panel-conn-name">{{filesystemMenuContents.name}}</span>
+                </div>
+                <div class="sra-panel-header-right">
+                    <button class="sra-upload-btn" guac-upload="uploadFiles">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="16 16 12 12 8 16"></polyline>
+                            <line x1="12" y1="12" x2="12" y2="21"></line>
+                            <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"></path>
+                        </svg>
+                        Upload
+                    </button>
+                    <button type="button" class="sra-download-btn"
+                            ng-click="$root.downloadSftpSelectedFile()"
+                            ng-disabled="!$root.sftpSelectedFile">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="8 12 12 16 16 12"></polyline>
+                            <line x1="12" y1="16" x2="12" y2="7"></line>
+                            <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"></path>
+                        </svg>
+                        Download
+                    </button>
+                    <button class="sra-back-btn" ng-click="hideFilesystemMenu()">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                        Back
+                    </button>
+                </div>
+            </div>
+
+            <!-- Breadcrumbs -->
+            <div class="header breadcrumbs"><div
+                    class="breadcrumb root"
+                    ng-click="changeDirectory(filesystemMenuContents, filesystemMenuContents.root)"></div><div
+                        class="breadcrumb"
+                        ng-repeat="file in getPath(filesystemMenuContents.currentDirectory)"
+                        ng-click="changeDirectory(filesystemMenuContents, file)">{{file.name}}</div>
+            </div>
+
+            <!-- File list -->
+            <div class="menu-body">
+                <guac-file-browser client="client" filesystem="filesystemMenuContents"></guac-file-browser>
+            </div>
+
+        </div>
+    </div>
+
+</guac-viewport>
