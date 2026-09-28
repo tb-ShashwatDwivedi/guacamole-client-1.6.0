@@ -79,7 +79,7 @@ public final class SftpScanHoldSelfCheck {
             SftpScanHoldRegistry.remove(sessionId, eventId);
         });
 
-        runScenario("session close expires holds locally", () -> {
+        runScenario("session detach keeps disk until TTL sweeper", () -> {
             String sessionId = uuid();
             String eventId = "102";
             byte[] bytes = "queued".getBytes();
@@ -88,8 +88,8 @@ public final class SftpScanHoldSelfCheck {
                             "Sandbox analysis in progress…"),
                     bytes);
             SftpScanPoller.cancelPoll(eventId);
-            SftpScanHoldService.closeSessionHolds(sessionId);
-            assertFalse(SftpScanHoldService.holdFileExists(sessionId, eventId));
+            SftpScanHoldService.detachSession(sessionId);
+            assertTrue(SftpScanHoldService.holdFileExists(sessionId, eventId));
             assertTrue(SftpScanHoldRegistry.listSession(sessionId).isEmpty());
         });
 
@@ -152,10 +152,8 @@ public final class SftpScanHoldSelfCheck {
     private static void assertCancelOutcomeContract() {
         String msg = SftpScanConfig.CANCELLED_BY_USER_MESSAGE;
         assertTrue(msg != null && msg.toLowerCase().contains("cancelled by user"));
-        assertTrue(SftpScanConfig.SESSION_CLOSED_MESSAGE.toLowerCase().contains("session closed"));
         assertTrue(SftpScanConfig.OUTCOME_PATCH_MAX_ATTEMPTS >= 2);
         pass("user cancel outcome uses Cancelled by user + retry");
-        pass("session close uses Session closed message constant");
     }
 
     private static void assertPollUsesPamStatusOnly() {

@@ -64,7 +64,7 @@ public class StreamInterceptingTunnel extends DelegatingGuacamoleTunnel {
         finally {
             inputStreamFilter.closeAllInterceptedStreams();
             outputStreamFilter.closeAllInterceptedStreams();
-            // Idle timeout / disconnect — PATCH PAM expired (session closed), not user cancel.
+            // Idle timeout / disconnect — detach holds; PAM review expires on 24h sweeper only.
             try {
                 SftpScanGate.onSessionClosed(getUUID().toString());
             }

@@ -169,8 +169,9 @@ public final class SftpScanGate {
     }
 
     public static void onSessionClosed(String sessionId) {
-        logger.info("SFTP session closed — expiring pending scan holds: session={}", sessionId);
-        SftpScanHoldService.closeSessionHolds(sessionId);
+        logger.info("SFTP session closed — detaching scan holds (24h PAM review TTL): session={}",
+                sessionId);
+        SftpScanHoldService.detachSession(sessionId);
     }
 
     private static SftpScanBlockedException blockedException(String userMessage,

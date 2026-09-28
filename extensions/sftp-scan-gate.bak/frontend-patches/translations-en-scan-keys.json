@@ -1,0 +1,8 @@
+        "ERROR_UPLOAD_SCAN_MALWARE": "File transfer blocked: malware detected ({THREAT}). Contact your administrator.",
+        "ERROR_UPLOAD_SCAN_UNAVAILABLE": "File transfer blocked: malware scanner is unavailable. Try again later.",
+        "ERROR_UPLOAD_SCAN_TOO_LARGE": "File transfer blocked: file exceeds maximum scan size ({SIZE} MB).",
+        "ERROR_UPLOAD_SCAN_NO_SCANNER": "File transfer blocked: no antimalware scanner is configured.",
+        "ERROR_DOWNLOAD_SCAN_MALWARE": "Download blocked: malware detected ({THREAT}).",
+        "ERROR_DOWNLOAD_SCAN_UNAVAILABLE": "Download blocked: malware scanner is unavailable.",
+        "ERROR_DOWNLOAD_SCAN_TOO_LARGE": "Download blocked: file exceeds maximum scan size.",
+        "ERROR_DOWNLOAD_SCAN_NO_SCANNER": "Download blocked: no antimalware scanner is configured.",

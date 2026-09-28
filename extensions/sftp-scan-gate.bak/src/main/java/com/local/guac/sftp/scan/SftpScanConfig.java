@@ -9,9 +9,6 @@ public final class SftpScanConfig {
     public static final String DEFAULT_API_KEY = "Jigar@926";
     /** Required phrase for PAM File Review (decision_reason cancelled_by_user). */
     public static final String CANCELLED_BY_USER_MESSAGE = "Cancelled by user";
-    /** Logout / tunnel close outcome message (not cancel). */
-    public static final String SESSION_CLOSED_MESSAGE =
-            "Session closed. This file is no longer available for review.";
     public static final int OUTCOME_PATCH_MAX_ATTEMPTS = 3;
     public static final String DEFAULT_HOLD_DIR = "/var/lib/guacamole/scan-hold";
     public static final boolean SCAN_ENABLED = true;

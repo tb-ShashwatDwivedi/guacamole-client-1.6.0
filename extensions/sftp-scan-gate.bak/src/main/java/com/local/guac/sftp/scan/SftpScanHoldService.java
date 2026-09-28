@@ -78,12 +78,7 @@ public final class SftpScanHoldService {
         SftpScanHoldRegistry.remove(sessionId, eventId);
         SftpScanPoller.cancelPoll(eventId);
         if (eventId != null && outcomeStatus != null) {
-            boolean patched = CLIENT.reportOutcome(eventId, outcomeStatus, errorMessage,
-                    SftpScanConfig.OUTCOME_PATCH_MAX_ATTEMPTS);
-            if (!patched) {
-                logger.error("Scan hold outcome PATCH failed after retries: session={}, "
-                        + "eventId={}, outcome={}", sessionId, eventId, outcomeStatus);
-            }
+            CLIENT.reportOutcome(eventId, outcomeStatus, errorMessage);
         }
         logger.info("Scan hold discarded: session={}, eventId={}, outcome={}",
                 sessionId, eventId, outcomeStatus);
@@ -111,41 +106,28 @@ public final class SftpScanHoldService {
     }
 
     /**
-     * Logout / disconnect / tunnel end: expire every non-completed hold in PAM (not user cancel).
+     * Tunnel/browser closed: stop polling and drop in-memory state. PAM stays pending until
+     * admin action or {@link SftpScanConfig#getHoldTtlMs()} sweeper expires the event.
      */
-    public static void closeSessionHolds(String sessionId) {
-        java.util.LinkedHashSet<String> eventIds = collectOpenHoldEventIds(sessionId);
-        for (String eventId : eventIds) {
-            discardHold(sessionId, eventId, "expired", SftpScanConfig.SESSION_CLOSED_MESSAGE);
-        }
-        STORE.deleteSession(sessionId);
-        SftpScanHoldRegistry.removeSession(sessionId);
-        logger.info("Scan hold session closed: session={}, holdsExpired={}",
-                sessionId, eventIds.size());
-    }
-
     public static void detachSession(String sessionId) {
-        closeSessionHolds(sessionId);
-    }
-
-    public static void cleanupSession(String sessionId) {
-        closeSessionHolds(sessionId);
-    }
-
-    private static java.util.LinkedHashSet<String> collectOpenHoldEventIds(String sessionId) {
+        List<SftpScanHoldEntry> entries = SftpScanHoldRegistry.listSession(sessionId);
         java.util.LinkedHashSet<String> eventIds = new java.util.LinkedHashSet<>();
-        for (SftpScanHoldEntry entry : SftpScanHoldRegistry.listSession(sessionId)) {
+        for (SftpScanHoldEntry entry : entries) {
             if (entry.getPhase() != SftpScanHoldEntry.Phase.COMPLETED) {
                 eventIds.add(entry.getEventId());
             }
         }
-        try {
-            eventIds.addAll(STORE.listEventIds(sessionId));
+        for (String eventId : eventIds) {
+            SftpScanPoller.cancelPoll(eventId);
         }
-        catch (IOException e) {
-            logger.warn("Unable to list hold files for session {}: {}", sessionId, e.getMessage());
-        }
-        return eventIds;
+        SftpScanHoldRegistry.removeSession(sessionId);
+        logger.info("Scan hold session detached (PAM review unchanged): session={}, holds={}",
+                sessionId, eventIds.size());
+    }
+
+    /** @deprecated use {@link #detachSession} on user disconnect; sweeper calls {@link #discardHold}. */
+    public static void cleanupSession(String sessionId) {
+        detachSession(sessionId);
     }
 
     public static void markCompleted(String sessionId, String eventId) {
